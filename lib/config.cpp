@@ -16,20 +16,30 @@
 
 #include <preshell/config.hpp>
 
-#include <boost/assign/list_of.hpp>
-
 using namespace preshell;
 
-config::config()
+namespace
 {
-  include_path =
-    boost::assign::list_of<std::string>
+  const char* default_includes[] =
+    {
       #include "default_include.hpp"
-  ;
-  sysinclude_path =
-    boost::assign::list_of<std::string>
+    };
+
+  const char* default_sysincludes[] =
+    {
       #include "default_sysinclude.hpp"
-  ;
+    };
 }
+
+config::config() :
+  include_path(
+    default_includes,
+    default_includes + sizeof(default_includes) / sizeof(const char*)
+  ),
+  sysinclude_path(
+    default_sysincludes,
+    default_sysincludes + sizeof(default_sysincludes) / sizeof(const char*)
+  )
+{}
 
 
