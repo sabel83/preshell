@@ -3,14 +3,14 @@ Preshell
 
 Prehsell is an interactive C/C++ preprocessor shell. It is intended to be used
 for trying out non-trivial preprocessor usage, such us using the macros of
-[Boost.Preprocessor](link:http://boost.org/libs/preprocessor).
+[Boost.Preprocessor](http://boost.org/libs/preprocessor).
 
 The shell simulates an preprocessor. It receives the input line by line coming
 from the shell. The result of preprocessing is immediately displayed to the
 user.
 
-The shell is based on the [Boost.Wave](link:http://boost.org/libs/wave) and the
-[Readline](www.gnu.org/software/readline) libraries.
+The shell is based on the [Boost.Wave](http://boost.org/libs/wave) and the
+[Readline](http://www.gnu.org/software/readline) libraries.
 
 Features
 --------
