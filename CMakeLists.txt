@@ -25,7 +25,8 @@ set(PATCH_VERSION 0)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 # Boost
-set(Boost_USE_STATIC_LIBS ON)
+# Turn this on to link statically against Boost
+# set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost COMPONENTS
   system # used by Wave
   thread # used by Wave

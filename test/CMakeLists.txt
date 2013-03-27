@@ -17,6 +17,10 @@
 aux_source_directory(. SOURCES)
 add_executable(preshell_test ${SOURCES})
 
+if(NOT Boost_USE_STATIC_LIBS)
+  add_definitions(-DBOOST_TEST_DYN_LINK)
+endif(NOT Boost_USE_STATIC_LIBS)
+
 target_link_libraries(preshell_test
   preshell_lib
   ${Boost_SYSTEM_LIBRARY}
