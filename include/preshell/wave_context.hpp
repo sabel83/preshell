@@ -17,12 +17,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <preshell/wave_context_workaround.hpp>
 #include <preshell/preshell_preprocessing_hooks.hpp>
 #include <preshell/if_state.hpp>
 #include <preshell/macro_map.hpp>
 #include <preshell/config.hpp>
 
-#include <boost/wave/cpp_context.hpp>
 #include <boost/wave/cpplexer/cpp_lex_iterator.hpp>
 
 #include <boost/shared_ptr.hpp>
@@ -33,7 +33,7 @@
 namespace preshell
 {
   typedef
-    boost::wave::context<
+    wave_context_workaround<
       std::string::const_iterator,
       boost::wave::cpplexer::lex_iterator<token>,
       boost::wave::iteration_context_policies::load_file_to_string,
