@@ -17,9 +17,9 @@
 aux_source_directory(. SOURCES)
 add_executable(preshell ${SOURCES})
 
-# Readline
-find_package(Readline)
-include_directories(${Readline_INCLUDE_DIR})
+# Editline
+find_package(Editline)
+include_directories(${Editline_INCLUDE_DIR})
 
 # Preshell
 target_link_libraries(preshell preshell_lib)
@@ -36,8 +36,8 @@ target_link_libraries(preshell
 # Program_options
 target_link_libraries(preshell ${Boost_PROGRAM_OPTIONS_LIBRARIES})
 
-# Readline
-target_link_libraries(preshell ${Readline_LIBRARY})
+# Editline
+target_link_libraries(preshell ${Editline_LIBRARY})
 
 install(TARGETS preshell DESTINATION bin)
 

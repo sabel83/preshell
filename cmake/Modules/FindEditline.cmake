@@ -15,19 +15,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # This module will define the following:
-#   Readline_FOUND
-#   Readline_INCLUDE_DIR
-#   Readline_LIBRARY
+#   Editline_FOUND
+#   Editline_INCLUDE_DIR
+#   Editline_LIBRARY
 
-find_path(Readline_INCLUDE_DIR readline/readline.h)
-find_library(Readline_LIBRARY NAMES readline)
+find_path(Editline_INCLUDE_DIR editline/readline.h)
+find_library(Editline_LIBRARY NAMES edit)
 
 include(FindPackageHandleStandardArgs)
-# handle the QUIETLY and REQUIRED arguments and set ReadLine_FOUND to TRUE
+# handle the QUIETLY and REQUIRED arguments and set Editline_FOUND to TRUE
 # if all listed variables are TRUE
 find_package_handle_standard_args(
-  Readline DEFAULT_MSG Readline_LIBRARY Readline_INCLUDE_DIR
+  Editline DEFAULT_MSG Editline_LIBRARY Editline_INCLUDE_DIR
 )
 
-mark_as_advanced(Readline_INCLUDE_DIR, Readline_LIBRARY)
+mark_as_advanced(Editline_INCLUDE_DIR, Editline_LIBRARY)
 

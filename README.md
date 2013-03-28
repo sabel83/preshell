@@ -12,7 +12,7 @@ from the shell. The result of preprocessing is immediately displayed to the
 user.
 
 The shell is based on the [Boost.Wave](http://boost.org/libs/wave) and the
-[Readline](http://www.gnu.org/software/readline) libraries.
+[Editline](http://www.thrysoee.dk/editline/) libraries.
 
 Features
 --------
@@ -33,7 +33,7 @@ Building Preshell
     * Boost.Wave
     * Boost.Test
     * Boost.ProgramOptions
-    * GNU Readline
+    * Editline
 * Install CMake
 * In the source directory run the following commands:
     * `mkdir bin`

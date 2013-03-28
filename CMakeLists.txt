@@ -40,7 +40,7 @@ find_package(Threads) # used by Boost.Thread
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
 
-# Readline lib
+# Editline lib
 include_directories("include")
 
 # Unit testing
@@ -67,7 +67,7 @@ if(EXISTS "${CMAKE_ROOT}/Modules/CPack.cmake")
   set(CPACK_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}_${MAJOR_VERSION}.${MINOR_VERSION}.${CPACK_PACKAGE_VERSION_PATCH}_${CMAKE_SYSTEM_PROCESSOR}")
   set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}_${MAJOR_VERSION}.${MINOR_VERSION}.${CPACK_PACKAGE_VERSION_PATCH}")
 
-  set(CPACK_DEBIAN_PACKAGE_DEPENDS "readline-common, libpthread-stubs0")
+  set(CPACK_DEBIAN_PACKAGE_DEPENDS "libedit2, libpthread-stubs0")
    
   set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
   set(CPACK_DEBIAN_PACKAGE_SECTION "devel")

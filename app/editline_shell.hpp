@@ -1,5 +1,5 @@
-#ifndef READLINE_SHELL_HPP
-#define READLINE_SHELL_HPP
+#ifndef EDITLINE_SHELL_HPP
+#define EDITLINE_SHELL_HPP
 
 // Preshell - Interactive C/C++ preprocessor shell
 // Copyright (C) 2013, Abel Sinkovics (abel@sinkovics.hu)
@@ -22,14 +22,14 @@
 #include <vector>
 #include <string>
 
-class readline_shell : public preshell::shell
+class editline_shell : public preshell::shell
 {
 public:
-  readline_shell(
+  editline_shell(
     const preshell::config& config_,
     const std::vector<std::string>& macros_
   );
-  virtual ~readline_shell();
+  virtual ~editline_shell();
 
   virtual void display_normal(const std::string& s_) const;
   virtual void display_info(const std::string& s_) const;
@@ -42,7 +42,7 @@ private:
 
   static void sig_int_handler(int);
 
-  static readline_shell* _instance;
+  static editline_shell* _instance;
 };
 
 #endif

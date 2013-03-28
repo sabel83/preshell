@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "readline_shell.hpp"
+#include "editline_shell.hpp"
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
@@ -60,7 +60,7 @@ int main(int argc_, char* argv_[])
   }
   else
   {
-    readline_shell shell(config, macros);
+    editline_shell shell(config, macros);
 
     shell.display_splash();
 

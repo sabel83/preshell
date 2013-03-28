@@ -14,12 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "readline_shell.hpp"
+#include "editline_shell.hpp"
 
 #include <console/attributes.hpp>
 
-#include <readline/readline.h>
-#include <readline/history.h>
+#include <editline/readline.h>
 
 #include <algorithm>
 #include <list>
@@ -33,18 +32,18 @@
 
 namespace
 {
-  class readline_tab_completion_override : boost::noncopyable
+  class editline_tab_completion_override : boost::noncopyable
   {
   private:
     typedef char** (*callback)(const char*, int, int);
   public:
-    readline_tab_completion_override(callback cb_) :
+    editline_tab_completion_override(callback cb_) :
       _old(rl_attempted_completion_function)
     {
       rl_attempted_completion_function = cb_;
     }
 
-    ~readline_tab_completion_override()
+    ~editline_tab_completion_override()
     {
       rl_attempted_completion_function = _old;
     }
@@ -99,15 +98,15 @@ namespace
   }
 }
 
-readline_shell* readline_shell::_instance = 0;
+editline_shell* editline_shell::_instance = 0;
 
-readline_shell::~readline_shell()
+editline_shell::~editline_shell()
 {
   assert(_instance);
   _instance = 0;
 }
 
-readline_shell::readline_shell(
+editline_shell::editline_shell(
   const preshell::config& config_,
   const std::vector<std::string>& macros_
 ) :
@@ -117,15 +116,15 @@ readline_shell::readline_shell(
   _instance = this;
 }
 
-void readline_shell::sig_int_handler(int)
+void editline_shell::sig_int_handler(int)
 {
   assert(_instance);
   _instance->cancel_operation();
 }
 
-void readline_shell::run()
+void editline_shell::run()
 {
-  readline_tab_completion_override ovr1(tab_completion);
+  editline_tab_completion_override ovr1(tab_completion);
   signal_handler_override<SIGINT> ovr2(sig_int_handler);
 
   for (;;)
@@ -143,7 +142,7 @@ void readline_shell::run()
   }
 }
 
-char* readline_shell::tab_generator(const char* text_, int state_)
+char* editline_shell::tab_generator(const char* text_, int state_)
 {
   using std::copy;
 
@@ -201,12 +200,12 @@ char* readline_shell::tab_generator(const char* text_, int state_)
   }
 }
 
-char** readline_shell::tab_completion(const char* text_, int start_, int end_)
+char** editline_shell::tab_completion(const char* text_, int start_, int end_)
 {
   return rl_completion_matches(const_cast<char*>(text_), &tab_generator);
 }
 
-void readline_shell::display_normal(const std::string& s_) const
+void editline_shell::display_normal(const std::string& s_) const
 {
   if (s_ != "")
   {
@@ -214,12 +213,12 @@ void readline_shell::display_normal(const std::string& s_) const
   }
 }
 
-void readline_shell::display_info(const std::string& s_) const
+void editline_shell::display_info(const std::string& s_) const
 {
   display<console::cyan>(s_);
 }
 
-void readline_shell::display_error(const std::string& s_) const
+void editline_shell::display_error(const std::string& s_) const
 {
   display<console::red>(s_);
 }
