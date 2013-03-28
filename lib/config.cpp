@@ -11,22 +11,24 @@ namespace
 {
   const char* default_includes[] =
     {
+      ""
       #include "default_include.hpp"
     };
 
   const char* default_sysincludes[] =
     {
+      ""
       #include "default_sysinclude.hpp"
     };
 }
 
 config::config() :
   include_path(
-    default_includes,
+    default_includes + 1,
     default_includes + sizeof(default_includes) / sizeof(const char*)
   ),
   sysinclude_path(
-    default_sysincludes,
+    default_sysincludes + 1,
     default_sysincludes + sizeof(default_sysincludes) / sizeof(const char*)
   )
 {}

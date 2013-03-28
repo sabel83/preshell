@@ -80,7 +80,7 @@ def main():
     paths = system
   else:
     paths = normal
-  print ',\n'.join(['"%s"' % s for s in paths])
+  print '\n'.join([', "%s"' % s for s in paths])
   print ''
 
 if __name__ == '__main__':
