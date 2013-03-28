@@ -45,6 +45,6 @@ Building Preshell
 License
 -------
 
-The libraries are published under the
-[GNU General Public License, version 3](http://www.gnu.org/licenses/gpl.html).
+Preshell is published under the
+[Boost Software License](http://www.boost.org/LICENSE_1_0.txt).
 
