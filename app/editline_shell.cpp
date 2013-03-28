@@ -40,6 +40,7 @@ namespace
     char** (*_old)(const char*, int, int);
   };
 
+#ifndef _MSC_VER
   template <int SigNum>
   class signal_handler_override : boost::noncopyable
   {
@@ -55,6 +56,7 @@ namespace
   private:
     sighandler_t _old;
   };
+#endif
 
   bool starts_with(const std::string& prefix_, const std::string& s_)
   {
@@ -114,7 +116,9 @@ void editline_shell::sig_int_handler(int)
 void editline_shell::run()
 {
   editline_tab_completion_override ovr1(tab_completion);
+#ifndef _MSC_VER
   signal_handler_override<SIGINT> ovr2(sig_int_handler);
+#endif
 
   for (;;)
   {
