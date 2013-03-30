@@ -4,10 +4,13 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 #include "editline_shell.hpp"
+#include "interrupt_handler_override.hpp"
 
 #include <console/attributes.hpp>
 
 #include <editline/readline.h>
+
+#include <boost/bind.hpp>
 
 #include <algorithm>
 #include <list>
@@ -16,8 +19,6 @@
 #include <vector>
 
 #include <cassert>
-
-#include <signal.h>
 
 namespace
 {
@@ -39,24 +40,6 @@ namespace
   private:
     char** (*_old)(const char*, int, int);
   };
-
-#ifndef _MSC_VER
-  template <int SigNum>
-  class signal_handler_override : boost::noncopyable
-  {
-  public:
-    signal_handler_override(sighandler_t handler_) :
-      _old(signal(SigNum, handler_))
-    {}
-
-    ~signal_handler_override()
-    {
-      signal(SigNum, _old);
-    }
-  private:
-    sighandler_t _old;
-  };
-#endif
 
   bool starts_with(const std::string& prefix_, const std::string& s_)
   {
@@ -107,18 +90,12 @@ editline_shell::editline_shell(
   _instance = this;
 }
 
-void editline_shell::sig_int_handler(int)
-{
-  assert(_instance);
-  _instance->cancel_operation();
-}
-
 void editline_shell::run()
 {
+  using boost::bind;
+
   editline_tab_completion_override ovr1(tab_completion);
-#ifndef _MSC_VER
-  signal_handler_override<SIGINT> ovr2(sig_int_handler);
-#endif
+  interrupt_handler_override ovr2(bind(&editline_shell::cancel_operation,this));
 
   for (;;)
   {

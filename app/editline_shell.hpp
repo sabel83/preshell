@@ -29,8 +29,6 @@ private:
   static char* tab_generator(const char* text_, int state_);
   static char** tab_completion(const char* text_, int start_, int end_);
 
-  static void sig_int_handler(int);
-
   static editline_shell* _instance;
 };
 
