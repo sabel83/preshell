@@ -186,7 +186,7 @@ result_ptr preshell::precompile(
 
     if (cancel_preprocessing)
     {
-      r->error = "ERROR: cancelled";
+      r->error = "Operation cancelled";
     }
     else
     {
@@ -201,23 +201,17 @@ result_ptr preshell::precompile(
   }
   catch (const boost::wave::cpp_exception& e)
   {
-    std::ostringstream s;
-    s << "ERROR: Wave exception: " << e.description();
-    r->error = s.str();
+    r->error = e.description();
     r->pp_context = context_;
   }
   catch (const std::exception& e)
   {
-    std::ostringstream s;
-    s << "ERROR: " << e.what();
-    r->error = s.str();
+    r->error = e.what();
     r->pp_context = context_;
   }
   catch (...)
   {
-    std::ostringstream s;
-    s << "ERROR: an unknown exception was thrown";
-    r->error = s.str();
+    r->error = "An unknown exception was thrown";
     r->pp_context = context_;
   }
 
