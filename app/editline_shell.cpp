@@ -5,8 +5,7 @@
 
 #include "editline_shell.hpp"
 #include "interrupt_handler_override.hpp"
-
-#include <console/attributes.hpp>
+#include "console.hpp"
 
 #include <editline/readline.h>
 
@@ -65,9 +64,10 @@ namespace
   {
     if (s_ != "")
     {
-      std::cout
-        << console::foreground<Color> << s_ << console::normal
-        << std::endl;
+      console::text_color(Color);
+      std::cout << s_;
+      console::reset();
+      std::cout << std::endl;
     }
   }
 }
@@ -185,12 +185,12 @@ void editline_shell::display_normal(const std::string& s_) const
 
 void editline_shell::display_info(const std::string& s_) const
 {
-  display<console::cyan>(s_);
+  display<console::bright_cyan>(s_);
 }
 
 void editline_shell::display_error(const std::string& s_) const
 {
-  display<console::red>(s_);
+  display<console::bright_red>(s_);
 }
 
 
