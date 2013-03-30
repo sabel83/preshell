@@ -20,7 +20,7 @@ Features
 * History of commands used
 * Tab-completion for preprocessor directives and macro names
 * Differentiating error messages from normal output using colors
-* Any preprocessing command can be interrupted using `Ctrl-C`
+* Any preprocessing command can be interrupted using `Ctrl-C` (only on Linux)
 * Debug pragmas:
     * `#pragma wave macro_names` displays the names of defined macros
     * `#pragma wave macros` display the defined macros and their definitions
