@@ -3,11 +3,11 @@ Preshell
 
 [![Build Status](https://secure.travis-ci.org/sabel83/preshell.png?branch=master "Build Status")](http://travis-ci.org/sabel83/preshell)
 
-Prehsell is an interactive C/C++ preprocessor shell. It is intended to be used
+Preshell is an interactive C/C++ preprocessor shell. It is intended to be used
 for trying out non-trivial preprocessor usage, such us using the macros of
 [Boost.Preprocessor](http://boost.org/libs/preprocessor).
 
-The shell simulates an preprocessor. It receives the input line by line coming
+The shell simulates a preprocessor. It receives the input line by line coming
 from the shell. The result of preprocessing is immediately displayed to the
 user.
 
