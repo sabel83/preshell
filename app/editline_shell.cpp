@@ -5,6 +5,7 @@
 
 #include "editline_shell.hpp"
 #include "interrupt_handler_override.hpp"
+#include "override_guard.hpp"
 #include "console.hpp"
 
 #include <editline/readline.h>
@@ -21,25 +22,6 @@
 
 namespace
 {
-  class editline_tab_completion_override : boost::noncopyable
-  {
-  private:
-    typedef char** (*callback)(const char*, int, int);
-  public:
-    editline_tab_completion_override(callback cb_) :
-      _old(rl_attempted_completion_function)
-    {
-      rl_attempted_completion_function = cb_;
-    }
-
-    ~editline_tab_completion_override()
-    {
-      rl_attempted_completion_function = _old;
-    }
-  private:
-    char** (*_old)(const char*, int, int);
-  };
-
   bool starts_with(const std::string& prefix_, const std::string& s_)
   {
     if (prefix_.length() <= s_.length())
@@ -94,21 +76,15 @@ void editline_shell::run()
 {
   using boost::bind;
 
-  editline_tab_completion_override ovr1(tab_completion);
+  override_guard<char** (*)(const char*, int, int)>
+    ovr1(rl_attempted_completion_function, tab_completion);
   interrupt_handler_override ovr2(bind(&editline_shell::cancel_operation,this));
 
-  for (;;)
+  while (char* l = readline(prompt().c_str()))
   {
-    if (char* l = readline(prompt().c_str()))
-    {
-      add_history(l);
-      line_available(l);
-      free(l);
-    }
-    else
-    {
-      break;
-    }
+    add_history(l);
+    line_available(l);
+    free(l);
   }
 }
 
