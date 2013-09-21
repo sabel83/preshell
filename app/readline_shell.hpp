@@ -1,5 +1,5 @@
-#ifndef PRESHELL_PRESHELL_HPP
-#define PRESHELL_PRESHELL_HPP
+#ifndef READLINE_SHELL_HPP
+#define READLINE_SHELL_HPP
 
 // Preshell - Interactive C/C++ preprocessor shell
 // Copyright (C) 2013, Abel Sinkovics (abel@sinkovics.hu)
@@ -17,27 +17,31 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <preshell/result.hpp>
-#include <preshell/context.hpp>
-#include <preshell/config.hpp>
+#include <preshell/shell.hpp>
 
+#include <vector>
 #include <string>
-#include <iosfwd>
 
-namespace preshell
+class readline_shell : public preshell::shell
 {
-  result_ptr precompile(
-    const std::string& input_,
-    const context& context_,
-    const config& config_
+public:
+  readline_shell(
+    const preshell::config& config_,
+    const std::vector<std::string>& macros_
   );
-  void cancel();
+  virtual ~readline_shell();
 
-  bool continuation_needed(const std::string& s_, const config& config_);
+  virtual void display_normal(const std::string& s_) const;
+  virtual void display_info(const std::string& s_) const;
+  virtual void display_error(const std::string& s_) const;
 
-  // Utility
-  void string_escape(const std::string& s_, std::ostream& out_);
-}
+  void run();
+private:
+  static char* tab_generator(const char* text_, int state_);
+  static char** tab_completion(const char* text_, int start_, int end_);
+
+  static readline_shell* _instance;
+};
 
 #endif
 

@@ -1,5 +1,5 @@
-#ifndef PRESHELL_PRESHELL_HPP
-#define PRESHELL_PRESHELL_HPP
+#ifndef PRESHELL_INDENTER_HPP
+#define PRESHELL_INDENTER_HPP
 
 // Preshell - Interactive C/C++ preprocessor shell
 // Copyright (C) 2013, Abel Sinkovics (abel@sinkovics.hu)
@@ -17,26 +17,39 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <preshell/result.hpp>
-#include <preshell/context.hpp>
-#include <preshell/config.hpp>
-
 #include <string>
-#include <iosfwd>
+#include <sstream>
 
 namespace preshell
 {
-  result_ptr precompile(
-    const std::string& input_,
-    const context& context_,
-    const config& config_
-  );
-  void cancel();
-
-  bool continuation_needed(const std::string& s_, const config& config_);
-
-  // Utility
-  void string_escape(const std::string& s_, std::ostream& out_);
+  class indenter
+  {
+  public:
+    indenter(unsigned int width_, const std::string& default_prefix_);
+  
+    indenter& left_align(
+      const std::string& s_,
+      const std::string& line_prefix_,
+      const std::string& first_line_prefix_
+    );
+  
+    indenter& left_align(
+      const std::string& s_,
+      const std::string& line_prefix_
+    );
+  
+    indenter& raw(const std::string& s_);
+  
+    indenter& left_align(const std::string& s_);
+  
+    indenter& empty_line();
+  
+    std::string str() const;
+  private:
+    unsigned int _width;
+    std::string _default_prefix;
+    std::ostringstream _buff;
+  };
 }
 
 #endif

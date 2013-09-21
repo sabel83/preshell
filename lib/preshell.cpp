@@ -1,7 +1,18 @@
-// Copyright Abel Sinkovics (abel@sinkovics.hu)  2013.
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+// Preshell - Interactive C/C++ preprocessor shell
+// Copyright (C) 2013, Abel Sinkovics (abel@sinkovics.hu)
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <preshell/preshell.hpp>
 
@@ -137,20 +148,6 @@ namespace
     s << "\"\n" << input_ << '\n';
     return s.str();
   }
-
-  template <char C>
-  std::string remove(const std::string& s_)
-  {
-    std::ostringstream s;
-    for (std::string::const_iterator i = s_.begin(), e = s_.end(); i != e; ++i)
-    {
-      if (*i != C)
-      {
-        s << *i;
-      }
-    }
-    return s.str();
-  }
 }
 
 result_ptr preshell::precompile(
@@ -221,16 +218,6 @@ result_ptr preshell::precompile(
 void preshell::cancel()
 {
   cancel_preprocessing = true;
-}
-
-std::string preshell::wave_version()
-{
-  std::list<if_state> if_states;
-  std::ostringstream s;
-  return
-    remove<'"'>(
-      create_context("", if_states, s, config())->get_version_string()
-    );
 }
 
 bool preshell::continuation_needed(const std::string& s_, const config& config_)

@@ -14,28 +14,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-aux_source_directory(. SOURCES)
-add_executable(preshell ${SOURCES})
+# This module will define the following:
+#   Readline_FOUND
+#   Readline_INCLUDE_DIR
+#   Readline_LIBRARY
 
-# Readline
-find_package(Readline)
-include_directories(${Readline_INCLUDE_DIR})
-target_link_libraries(preshell ${Readline_LIBRARY})
+find_path(Readline_INCLUDE_DIR readline/readline.h)
+find_library(Readline_LIBRARY NAMES readline)
 
-# Preshell
-target_link_libraries(preshell preshell_lib)
-
-# Wave
-target_link_libraries(preshell
-  ${Boost_SYSTEM_LIBRARIES}
-  ${Boost_THREAD_LIBRARIES}
-  ${Boost_FILESYSTEM_LIBRARIES}
-  ${Boost_WAVE_LIBRARIES}
-  ${CMAKE_THREAD_LIBS_INIT}
+include(FindPackageHandleStandardArgs)
+# handle the QUIETLY and REQUIRED arguments and set Readline_FOUND to TRUE
+# if all listed variables are TRUE
+find_package_handle_standard_args(
+  Readline DEFAULT_MSG Readline_LIBRARY Readline_INCLUDE_DIR
 )
 
-# Program_options
-target_link_libraries(preshell ${Boost_PROGRAM_OPTIONS_LIBRARIES})
-
-install(TARGETS preshell DESTINATION bin)
+mark_as_advanced(Readline_INCLUDE_DIR, Readline_LIBRARY)
 

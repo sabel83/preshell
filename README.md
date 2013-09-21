@@ -12,7 +12,7 @@ from the shell. The result of preprocessing is immediately displayed to the
 user.
 
 The shell is based on the [Boost.Wave](http://boost.org/libs/wave) and the
-[Editline](http://www.thrysoee.dk/editline/) libraries.
+[Readline](http://www.gnu.org/software/readline) libraries.
 
 Features
 --------
@@ -33,7 +33,7 @@ Building Preshell
     * Boost.Wave
     * Boost.Test
     * Boost.ProgramOptions
-    * Editline
+    * Readline
 * Install CMake
 * In the source directory run the following commands:
     * `mkdir bin`
@@ -46,5 +46,5 @@ License
 -------
 
 Preshell is published under the
-[Boost Software License](http://www.boost.org/LICENSE_1_0.txt).
+[GNU General Public License, version 3](http://www.gnu.org/licenses/gpl.html).
 
