@@ -32,6 +32,9 @@ The shell is based on the [Boost.Wave](http://boost.org/libs/wave) and the
     * Boost.ProgramOptions
     * Readline
 * Install CMake
+* \[Optional\] Set the right system include path
+    * This step is important for Preshell to find the same headers GCC uses
+    * `tools/gcc_default_path > lib/default_sysinclude.hpp`
 * In the source directory run the following commands:
     * `mkdir bin`
     * `cd bin`
