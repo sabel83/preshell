@@ -61,6 +61,18 @@ std::string preshell::readline_version()
 
 std::string preshell::version()
 {
+#ifndef PRESHELL_MAJOR
+  #error PRESHELL_MAJOR not defined
+#endif
+
+#ifndef PRESHELL_MINOR
+  #error PRESHELL_MINOR not defined
+#endif
+
+#ifndef PRESHELL_PATCH
+  #error PRESHELL_PATCH not defined
+#endif
+
   return
     BOOST_PP_STRINGIZE(PRESHELL_MAJOR)
     "." BOOST_PP_STRINGIZE(PRESHELL_MINOR)
