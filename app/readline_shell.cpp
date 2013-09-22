@@ -32,6 +32,8 @@
 
 #include <cassert>
 
+#include <sys/ioctl.h>
+
 namespace
 {
   bool starts_with(const std::string& prefix_, const std::string& s_)
@@ -179,6 +181,13 @@ void readline_shell::display_info(const std::string& s_) const
 void readline_shell::display_error(const std::string& s_) const
 {
   display<console::bright_red>(s_);
+}
+
+unsigned int readline_shell::width() const
+{
+  struct winsize w;
+  ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+  return w.ws_col;
 }
 
 

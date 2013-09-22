@@ -20,6 +20,7 @@
 #include <preshell/result.hpp>
 #include <preshell/context.hpp>
 #include <preshell/config.hpp>
+#include <preshell/indenter.hpp>
 
 #include <string>
 #include <iosfwd>
@@ -29,7 +30,8 @@ namespace preshell
   result_ptr precompile(
     const std::string& input_,
     const context& context_,
-    const config& config_
+    const config& config_,
+    indenter& indenter_
   );
   void cancel();
 
@@ -37,6 +39,7 @@ namespace preshell
 
   // Utility
   void string_escape(const std::string& s_, std::ostream& out_);
+  std::string string_escape(const std::string& s_);
 }
 
 #endif

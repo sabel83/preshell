@@ -20,6 +20,7 @@
 #include <preshell/config.hpp>
 #include <preshell/context.hpp>
 #include <preshell/result.hpp>
+#include <preshell/indenter.hpp>
 
 #include <vector>
 #include <string>
@@ -38,6 +39,8 @@ namespace preshell
     virtual void display_normal(const std::string& s_) const = 0;
     virtual void display_info(const std::string& s_) const = 0;
     virtual void display_error(const std::string& s_) const = 0;
+
+    virtual unsigned int width() const = 0;
   
     void display_splash() const;
     void line_available(const std::string& s_);
@@ -50,6 +53,7 @@ namespace preshell
   
     static const std::vector<std::string> directives;
   private:
+    indenter _indenter;
     preshell::config _config;
     preshell::result_ptr _context;
     std::string _buffer;

@@ -22,6 +22,7 @@
 #include <preshell/if_state.hpp>
 #include <preshell/macro_map.hpp>
 #include <preshell/config.hpp>
+#include <preshell/indenter.hpp>
 
 #include <boost/wave/cpplexer/cpp_lex_iterator.hpp>
 
@@ -47,7 +48,8 @@ namespace preshell
     const std::string& input_,
     std::list<if_state>& if_states_,
     std::ostream& info_channel_,
-    const config& config_
+    const config& config_,
+    indenter& indenter_
   );
 
   macro_map get_macros(const wave_context& context_);

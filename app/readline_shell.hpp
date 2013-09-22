@@ -35,6 +35,8 @@ public:
   virtual void display_info(const std::string& s_) const;
   virtual void display_error(const std::string& s_) const;
 
+  virtual unsigned int width() const;
+
   void run();
 private:
   static char* tab_generator(const char* text_, int state_);

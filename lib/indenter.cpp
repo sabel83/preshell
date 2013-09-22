@@ -14,11 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "indenter.hpp"
+#include <preshell/indenter.hpp>
 
 #include <boost/foreach.hpp>
 
 #include <vector>
+#include <iostream>
 #include <cassert>
 
 using namespace preshell;
@@ -66,14 +67,14 @@ namespace
   }
 }
 
-indenter::indenter(unsigned int width_, const std::string& default_prefix_) :
-  _width(width_),
-  _default_prefix(default_prefix_)
+indenter::indenter(const get_width_t& get_width_, const output_t& out_) :
+  _get_width(get_width_),
+  _out(out_)
 {}
 
-std::string indenter::str() const
+indenter::~indenter()
 {
-  return _buff.str();
+  assert(_buff.str() == "");
 }
 
 indenter& indenter::raw(const std::string& s_)
@@ -84,12 +85,12 @@ indenter& indenter::raw(const std::string& s_)
 
 indenter& indenter::empty_line()
 {
-  return raw(_default_prefix);
+  return raw("");
 }
 
 indenter& indenter::left_align(const std::string& s_)
 {
-  return left_align(s_, _default_prefix, _default_prefix);
+  return left_align(s_, "", "");
 }
 
 indenter& indenter::left_align(
@@ -109,7 +110,7 @@ indenter& indenter::left_align(
   assert(first_line_prefix_.length() == line_prefix_.length());
 
   std::vector<std::string> lines;
-  word_wrap(s_, _width - line_prefix_.length(), lines);
+  word_wrap(s_, _get_width() - line_prefix_.length(), lines);
   bool first = true;
   BOOST_FOREACH(const std::string& line, lines)
   {
@@ -119,4 +120,9 @@ indenter& indenter::left_align(
   return *this;
 }
 
+void indenter::flush()
+{
+  _out(_buff.str());
+  _buff.str(std::string());
+}
 

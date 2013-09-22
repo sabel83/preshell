@@ -20,6 +20,7 @@
 #include <preshell/macro_map.hpp>
 #include <preshell/if_state.hpp>
 #include <preshell/config.hpp>
+#include <preshell/indenter.hpp>
 
 #include <list>
 #include <vector>
@@ -52,7 +53,8 @@ namespace preshell
 
     static context initial(
       const config& config_,
-      const std::vector<std::string>& macros_
+      const std::vector<std::string>& macros_,
+      indenter& indenter_
     );
   };
 }

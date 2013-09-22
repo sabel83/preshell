@@ -16,43 +16,31 @@
 
 #include <preshell/macro_definition.hpp>
 
+#include <boost/algorithm/string/join.hpp>
+#include <boost/range/adaptors.hpp>
+#include <boost/bind.hpp>
+
 #include <iostream>
 
 using namespace preshell;
 
-namespace
-{
-  template <class It>
-  void show_tokens(It begin_, It end_, std::ostream& o_)
-  {
-    bool first = true;
-    for (; begin_ != end_; ++begin_)
-    {
-      if (first)
-      {
-        first = false;
-      }
-      else
-      {
-        o_ << ", ";
-      }
-      o_ << begin_->get_value();
-    }
-  }
-}
-
 std::ostream& preshell::operator<<(std::ostream& o_, const macro_definition& m_)
 {
+  using boost::algorithm::join;
+  using boost::adaptors::transformed;
+  using boost::bind;
+
   if (m_.has_parameters())
   {
-    o_ << "(";
-    show_tokens(m_.parameters().begin(), m_.parameters().end(), o_);
-    o_ << ") ";
+    o_
+      << "("
+      << join(m_.parameters() | transformed(bind(&token::get_value, _1)), ", ")
+      << ") ";
   }
 
-  show_tokens(m_.definition().begin(), m_.definition().end(), o_);
-  
-  return o_ << " @ " << m_.position();
+  return o_
+    << join(m_.definition() | transformed(bind(&token::get_value, _1)), "")
+    << " @ " << m_.position();
 }
 
 

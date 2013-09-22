@@ -17,10 +17,10 @@
 #include <preshell/shell.hpp>
 #include <preshell/preshell.hpp>
 #include <preshell/version.hpp>
-
-#include "indenter.hpp"
+#include <preshell/indenter.hpp>
 
 #include <boost/assign/list_of.hpp>
+#include <boost/bind.hpp>
 
 #include <boost/preprocessor/stringize.hpp>
 
@@ -30,8 +30,16 @@ shell::shell(
   const preshell::config& config_,
   const std::vector<std::string>& macros_
 ) :
+  _indenter(
+    boost::bind(&shell::width, static_cast<shell*>(this)),
+    boost::bind(&shell::display_info, static_cast<shell*>(this), _1)
+  ),
   _config(config_),
-  _context(new preshell::result(preshell::context::initial(config_, macros_))),
+  _context(
+    new preshell::result(
+      preshell::context::initial(config_, macros_, _indenter)
+    )
+  ),
   _buffer()
 {}
 
@@ -70,29 +78,37 @@ const preshell::context& shell::context() const
   return _context->pp_context;
 }
 
+namespace
+{
+  void display_on_stream(std::ostream* out_, std::string& s_)
+  {
+    *out_ << s_;
+  }
+}
+
 void shell::display_splash() const
 {
-  display_normal(
-    indenter(80, " * ")
-      .raw("/*")
-      .left_align("Preprocessor shell " + preshell::version())
-      .empty_line()
-      .left_align("Based on")
-      .left_align(
-        preshell::wave_version(),
-        " *              ",
-        " *   Boost.Wave "
-      )
-      .left_align(
-        preshell::readline_version(),
-        " *              ",
-        " *   Readline   "
-      )
-      .empty_line()
-      .left_align("Getting help: #pragma wave preshell_help")
-      .raw(" */")
-      .str()
-  );
+  using boost::bind;
+
+  indenter(bind(&shell::width, this), bind(&shell::display_normal, this, _1))
+    .raw("/*")
+    .left_align("Preprocessor shell " + preshell::version(), " * ")
+    .raw(" * ")
+    .left_align("Based on", " * ")
+    .left_align(
+      preshell::wave_version(),
+      " *              ",
+      " *   Boost.Wave "
+    )
+    .left_align(
+      preshell::readline_version(),
+      " *              ",
+      " *   Readline   "
+    )
+    .raw(" * ")
+    .left_align("Getting help: #pragma wave preshell_help", " * ")
+    .raw(" */")
+    .flush();
 }
 
 void shell::line_available(const std::string& s_)
@@ -101,7 +117,7 @@ void shell::line_available(const std::string& s_)
 
   if (!preshell::continuation_needed(_buffer, _config))
   {
-    _context = preshell::precompile(_buffer, _context->pp_context, _config);
+    _context = precompile(_buffer, _context->pp_context, _config, _indenter);
     _buffer = "";
 
     if (_context->output != "")

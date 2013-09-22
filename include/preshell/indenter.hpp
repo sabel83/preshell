@@ -17,6 +17,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <boost/function.hpp>
+
 #include <string>
 #include <sstream>
 
@@ -25,7 +27,11 @@ namespace preshell
   class indenter
   {
   public:
-    indenter(unsigned int width_, const std::string& default_prefix_);
+    typedef boost::function<unsigned int()> get_width_t;
+    typedef boost::function<void(std::string)> output_t;
+
+    indenter(const get_width_t& get_width_, const output_t& out_);
+    ~indenter();
   
     indenter& left_align(
       const std::string& s_,
@@ -43,11 +49,13 @@ namespace preshell
     indenter& left_align(const std::string& s_);
   
     indenter& empty_line();
-  
-    std::string str() const;
+
+    // return type is void since this should be the final call of a chain of
+    // method calls
+    void flush();
   private:
-    unsigned int _width;
-    std::string _default_prefix;
+    get_width_t _get_width;
+    output_t _out;
     std::ostringstream _buff;
   };
 }

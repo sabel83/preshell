@@ -88,13 +88,14 @@ namespace
 
 context context::initial(
   const config& config_,
-  const std::vector<std::string>& macros_
+  const std::vector<std::string>& macros_,
+  indenter& indenter_
 )
 {
   std::list<if_state> if_states;
   std::ostringstream s;
 
-  wave_context_ptr wctx = create_context("", if_states, s, config_);
+  wave_context_ptr wctx = create_context("", if_states, s, config_, indenter_);
   for (
     std::vector<std::string>::const_iterator
       i = macros_.begin(),

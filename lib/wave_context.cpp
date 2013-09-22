@@ -17,6 +17,8 @@
 #include <preshell/wave_context.hpp>
 #include <preshell/preshell.hpp>
 
+#include <boost/foreach.hpp>
+
 using namespace preshell;
 
 namespace
@@ -85,7 +87,8 @@ wave_context_ptr preshell::create_context(
   const std::string& input_,
   std::list<if_state>& if_states_,
   std::ostream& info_channel_,
-  const config& config_
+  const config& config_,
+  indenter& indenter_
 )
 {
   wave_context_ptr
@@ -94,7 +97,7 @@ wave_context_ptr preshell::create_context(
         input_.begin(),
         input_.end(),
         "<Unknown>",
-        preshell_preprocessing_hooks(if_states_, info_channel_)
+        preshell_preprocessing_hooks(if_states_, info_channel_, indenter_)
       )
     );
   context->set_language(
@@ -105,22 +108,14 @@ wave_context_ptr preshell::create_context(
 
   typedef std::vector<std::string>::const_iterator it;
 
-  for (
-    it i = config_.include_path.begin(), e = config_.include_path.end();
-    i != e;
-    ++i
-  )
+  BOOST_FOREACH(const std::string& s, config_.include_path)
   {
-    context->add_include_path(i->c_str());
+    context->add_include_path(s.c_str());
   }
 
-  for (
-    it i = config_.sysinclude_path.begin(), e = config_.sysinclude_path.end();
-    i != e;
-    ++i
-  )
+  BOOST_FOREACH(const std::string& s, config_.sysinclude_path)
   {
-    context->add_sysinclude_path(i->c_str());
+    context->add_sysinclude_path(s.c_str());
   }
 
   return context;

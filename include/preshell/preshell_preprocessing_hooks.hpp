@@ -19,8 +19,16 @@
 
 #include <preshell/if_state.hpp>
 #include <preshell/preshell.hpp>
+#include <preshell/indenter.hpp>
 
 #include <boost/wave/cpp_context.hpp>
+
+#include <boost/range/adaptors.hpp>
+
+#include <boost/algorithm/string/join.hpp>
+#include <boost/iterator/transform_iterator.hpp>
+
+#include <boost/bind.hpp>
 
 #include <list>
 #include <iostream>
@@ -34,11 +42,9 @@ namespace preshell
   public:
     preshell_preprocessing_hooks(
       std::list<if_state>& if_states_,
-      std::ostream& info_channel_
-    ) :
-      _if_states(if_states_),
-      _info_channel(info_channel_)
-    {}
+      std::ostream& info_channel_,
+      indenter& indenter_
+    );
 
     template <class Context, class Container>
     bool interpret_pragma(
@@ -55,123 +61,26 @@ namespace preshell
       }
       else if (option_.get_value() == "preshell_help")
       {
-        _info_channel <<
-          "Usage:\n"
-          "\n"
-          "  The preprocessor shell preprocesses the code you give it and\n"
-          "  displays the preprocessed result. The shell provides command\n"
-          "  history and tab-completion for preprocessor directives and macro\n"
-          "  names. Some pragmas are also provided to inspect or update the \n"
-          "  state of the preprocessor.\n"
-          "\n"
-          "  When the last character of a line is '\\', the shell does not\n"
-          "  process it, but waits for the next line and processes the two\n"
-          "  lines together.\n"
-          "\n"
-          "  Any preprocessing can be interrupted by pressing Ctrl-C, which\n"
-          "  gives you the prompt back.\n"
-          "\n"
-          "  You can quit by pressing Ctrl-D.\n"
-          "\n"
-          "Available pragmas:\n"
-          "\n"
-          "  #pragma wave macros\n"
-          "    Displays the list of defined macros.\n"
-          "\n"
-          "  #pragma wave macro_names\n"
-          "    Displays the list of defined macro names.\n"
-          "\n"
-          "  #pragma wave preshell_help\n"
-          "    Displays this help.\n"
-          "\n"
-          "  #pragma wave quit\n"
-          "    Terminates the preprocessor.\n"
-          ;
+        display_help();
         return true;
       }
       else if (option_.get_value() == "macro_names")
       {
-        const std::set<std::string> names = macro_names(ctx_);
-        bool first = true;
-        for (
-          std::set<std::string>::const_iterator
-            i = names.begin(),
-            e = names.end();
-          i != e;
-          ++i
-        )
-        {
-          if (first)
-          {
-            first = false;
-          }
-          else
-          {
-            _info_channel << std::endl;
-          }
-          _info_channel << *i;
-        }
+        display_macro_names(macro_names(ctx_));
         return true;
       }
       else if (option_.get_value() == "macros")
       {
-        const std::set<std::string> names = macro_names(ctx_);
-        bool first = true;
-        for (
-          std::set<std::string>::const_iterator
-            i = names.begin(),
-            e = names.end();
-          i != e;
-          ++i
-        )
-        {
-          if (first)
-          {
-            first = false;
-          }
-          else
-          {
-            _info_channel << std::endl;
-          }
+        using boost::algorithm::join;
+        using boost::adaptors::transformed;
+        using boost::bind;
 
-          if (*i == "__FILE__")
-          {
-            _info_channel << "__FILE__ \"";
-            string_escape(ctx_.get_main_pos().get_file().c_str(),_info_channel);
-            _info_channel << "\"";
-          }
-          else if (*i == "__LINE__")
-          {
-            _info_channel << "__LINE__ " << ctx_.get_main_pos().get_line();
-          }
-          else
-          {
-            bool is_function_style;
-            bool is_predefined;
-            typename Context::position_type position;
-            std::vector<typename Context::token_type> parameters;
-            typename Context::token_sequence_type definition;
-
-            ctx_.get_macro_definition(
-              *i,
-              is_function_style,
-              is_predefined,
-              position,
-              parameters,
-              definition
-            );
-
-            _info_channel << *i;
-            if (is_function_style)
-            {
-              _info_channel << "(";
-              dump_tokens(parameters.begin(), parameters.end(), ", ");
-              _info_channel << ")";
-            }
-            _info_channel << " ";
-            dump_tokens(definition.begin(), definition.end(), "");
-          }
-        }
+        _info_channel <<
+          join(
+            macro_names(ctx_)
+              | transformed(bind(macro_definition<Context>, &ctx_, _1)),
+            "\n"
+          );
         return true;
       }
 
@@ -236,6 +145,7 @@ namespace preshell
 
     std::list<if_state>& _if_states;
     std::ostream& _info_channel;
+    indenter& _indenter;
 
     template <class Token>
     void process_token(const Token& token_)
@@ -260,42 +170,95 @@ namespace preshell
       }
     }
 
-    template <class It>
-    void dump_tokens(It begin_, It end_, const std::string& separator_)
+    template <class Context>
+    static std::string macro_definition(
+      const Context* ctx_,
+      const std::string& name_
+    )
     {
-      bool first2 = true;
-      for (; begin_ != end_; ++begin_)
+      std::ostringstream os;
+
+      if (name_ == "__FILE__")
       {
-        if (first2)
-        {
-          first2 = false;
-        }
-        else
-        {
-          _info_channel << separator_;
-        }
-        _info_channel << begin_->get_value();
+        os << "__FILE__ \"";
+        string_escape(ctx_->get_main_pos().get_file().c_str(), os);
+        os << "\"";
       }
+      else if (name_ == "__LINE__")
+      {
+        os << "__LINE__ " << ctx_->get_main_pos().get_line();
+      }
+      else
+      {
+        using boost::algorithm::join;
+        using boost::adaptors::transformed;
+        using boost::bind;
+
+        bool is_function_style;
+        bool is_predefined;
+        typename Context::position_type position;
+        std::vector<typename Context::token_type> parameters;
+        typename Context::token_sequence_type definition;
+
+        ctx_->get_macro_definition(
+          name_,
+          is_function_style,
+          is_predefined,
+          position,
+          parameters,
+          definition
+        );
+
+        os << name_;
+        if (is_function_style)
+        {
+          os
+            << "("
+            <<
+              join(
+                parameters
+                  | transformed(bind(&Context::token_type::get_value, _1)),
+                ", "
+              )
+            << ")";
+        }
+        os
+          << " "
+          <<
+            join(
+              definition
+                | transformed(bind(&Context::token_type::get_value, _1)),
+              ""
+            );
+      }
+
+      return os.str();
     }
 
     template <class Context>
     static std::set<std::string> macro_names(const Context& ctx_)
     {
-      std::set<std::string> names;
-      for (
-        typename Context::const_name_iterator
-          i = ctx_.macro_names_begin(),
-          e = ctx_.macro_names_end();
-        i != e;
-        ++i
-      )
-      {
-        names.insert(i->c_str());
-      }
+      using boost::bind;
+      using boost::make_transform_iterator;
+
+      std::set<std::string>
+        names(
+          make_transform_iterator(
+            ctx_.macro_names_begin(),
+            bind(&Context::string_type::c_str, _1)
+          ),
+          make_transform_iterator(
+            ctx_.macro_names_end(),
+            bind(&Context::string_type::c_str, _1)
+          )
+        );
       names.insert("__LINE__");
       names.insert("__FILE__");
       return names;
     }
+
+    void display_help();
+    void display_macro_names(const std::set<std::string>& names_);
   };
 }
 

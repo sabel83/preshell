@@ -153,7 +153,8 @@ namespace
 result_ptr preshell::precompile(
   const std::string& input_,
   const context& context_,
-  const config& config_
+  const config& config_,
+  indenter& indenter_
 )
 {
   cancel_preprocessing = false;
@@ -175,7 +176,7 @@ result_ptr preshell::precompile(
     std::ostringstream info;
 
     wave_context_ptr context =
-      create_context(input, r->pp_context.if_states, info, config_);
+      create_context(input, r->pp_context.if_states, info, config_, indenter_);
     delete_all_macros(*context);
     add_macros(context_.macros.begin(), context_.macros.end(), *context);
 
@@ -243,4 +244,10 @@ void preshell::string_escape(const std::string& s_, std::ostream& out_)
   }
 }
 
+std::string preshell::string_escape(const std::string& s_)
+{
+  std::ostringstream s;
+  string_escape(s_, s);
+  return s.str();
+}
 
