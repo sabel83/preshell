@@ -50,32 +50,40 @@ int main(int argc_, char* argv_[])
     ("preprocess,p", value(&preprocess), "Preprocess code at startup")
     ;
 
-  variables_map vm;
-  store(parse_command_line(argc_, argv_, desc), vm);
-  notify(vm);
-
-  if (vm.count("help"))
+  try
   {
-    std::cout << desc << std::endl;
-  }
-  else
-  {
-    readline_shell shell(config, macros);
+    variables_map vm;
+    store(parse_command_line(argc_, argv_, desc), vm);
+    notify(vm);
 
-    shell.display_splash();
-
-    for (
-      std::vector<string>::const_iterator
-        i = preprocess.begin(),
-        e = preprocess.end();
-      i != e;
-      ++i
-    )
+    if (vm.count("help"))
     {
-      shell.line_available(*i);
+      std::cout << desc << std::endl;
     }
+    else
+    {
+      readline_shell shell(config, macros);
 
-    shell.run();
+      shell.display_splash();
+
+      for (
+        std::vector<string>::const_iterator
+          i = preprocess.begin(),
+          e = preprocess.end();
+        i != e;
+        ++i
+      )
+      {
+        shell.line_available(*i);
+      }
+
+      shell.run();
+    }
+  }
+  catch (const boost::program_options::error& e_)
+  {
+    std::cerr << e_.what() << "\n\n" << desc << std::endl;
+    return 1;
   }
 }
 
