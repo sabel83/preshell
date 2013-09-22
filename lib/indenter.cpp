@@ -72,6 +72,11 @@ indenter::indenter(const get_width_t& get_width_, const output_t& out_) :
   _out(out_)
 {}
 
+indenter::indenter(const indenter& base_, const output_t& out_) :
+  _get_width(base_._get_width),
+  _out(out_)
+{}
+
 indenter::~indenter()
 {
   assert(_buff.str() == "");

@@ -42,7 +42,6 @@ namespace preshell
   public:
     preshell_preprocessing_hooks(
       std::list<if_state>& if_states_,
-      std::ostream& info_channel_,
       indenter& indenter_
     );
 
@@ -75,12 +74,15 @@ namespace preshell
         using boost::adaptors::transformed;
         using boost::bind;
 
-        _info_channel <<
-          join(
-            macro_names(ctx_)
-              | transformed(bind(macro_definition<Context>, &ctx_, _1)),
-            "\n"
-          );
+        _indenter
+          .raw(
+            join(
+              macro_names(ctx_)
+                | transformed(bind(macro_definition<Context>, &ctx_, _1)),
+              "\n"
+            )
+          )
+          .flush();
         return true;
       }
 
@@ -144,7 +146,6 @@ namespace preshell
     typedef boost::wave::context_policies::default_preprocessing_hooks base;
 
     std::list<if_state>& _if_states;
-    std::ostream& _info_channel;
     indenter& _indenter;
 
     template <class Token>

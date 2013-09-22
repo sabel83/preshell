@@ -86,7 +86,6 @@ namespace
 wave_context_ptr preshell::create_context(
   const std::string& input_,
   std::list<if_state>& if_states_,
-  std::ostream& info_channel_,
   const config& config_,
   indenter& indenter_
 )
@@ -97,7 +96,7 @@ wave_context_ptr preshell::create_context(
         input_.begin(),
         input_.end(),
         "<Unknown>",
-        preshell_preprocessing_hooks(if_states_, info_channel_, indenter_)
+        preshell_preprocessing_hooks(if_states_, indenter_)
       )
     );
   context->set_language(

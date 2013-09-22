@@ -30,7 +30,7 @@ namespace preshell
   class shell
   {
   public:
-    explicit shell(
+    shell(
       const preshell::config& config_,
       const std::vector<std::string>& macros_
     );

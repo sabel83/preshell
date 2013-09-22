@@ -22,11 +22,9 @@ using namespace preshell;
 
 preshell_preprocessing_hooks::preshell_preprocessing_hooks(
   std::list<if_state>& if_states_,
-  std::ostream& info_channel_,
   indenter& indenter_
 ) :
   _if_states(if_states_),
-  _info_channel(info_channel_),
   _indenter(indenter_)
 {}
 
@@ -76,7 +74,9 @@ void preshell_preprocessing_hooks::display_macro_names(
   const std::set<std::string>& names_
 )
 {
-  _info_channel << boost::algorithm::join(names_, "\n");
+  _indenter
+    .raw(boost::algorithm::join(names_, "\n"))
+    .flush();
 }
 
 

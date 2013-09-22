@@ -21,6 +21,7 @@
 
 #include <string>
 #include <sstream>
+#include <iosfwd>
 
 namespace preshell
 {
@@ -31,6 +32,7 @@ namespace preshell
     typedef boost::function<void(std::string)> output_t;
 
     indenter(const get_width_t& get_width_, const output_t& out_);
+    indenter(const indenter& base_, const output_t& out_);
     ~indenter();
   
     indenter& left_align(

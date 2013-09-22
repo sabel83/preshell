@@ -47,7 +47,6 @@ namespace preshell
   wave_context_ptr create_context(
     const std::string& input_,
     std::list<if_state>& if_states_,
-    std::ostream& info_channel_,
     const config& config_,
     indenter& indenter_
   );

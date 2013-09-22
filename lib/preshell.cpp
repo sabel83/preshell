@@ -150,6 +150,14 @@ namespace
   }
 }
 
+namespace
+{
+  void display_on_stream(std::ostream* out_, std::string s_)
+  {
+    *out_ << s_;
+  }
+}
+
 result_ptr preshell::precompile(
   const std::string& input_,
   const context& context_,
@@ -157,6 +165,8 @@ result_ptr preshell::precompile(
   indenter& indenter_
 )
 {
+  using boost::bind;
+
   cancel_preprocessing = false;
   result_ptr r = result_ptr(new result());
 
@@ -174,9 +184,10 @@ result_ptr preshell::precompile(
       );
 
     std::ostringstream info;
+    indenter info_indenter(indenter_, bind(display_on_stream, &info, _1));
 
     wave_context_ptr context =
-      create_context(input, r->pp_context.if_states, info, config_, indenter_);
+      create_context(input, r->pp_context.if_states, config_, info_indenter);
     delete_all_macros(*context);
     add_macros(context_.macros.begin(), context_.macros.end(), *context);
 

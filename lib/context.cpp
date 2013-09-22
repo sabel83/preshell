@@ -20,6 +20,8 @@
 #include <preshell/file_position.hpp>
 #include <preshell/token.hpp>
 
+#include <boost/foreach.hpp>
+
 #include <iostream>
 #include <sstream>
 
@@ -93,18 +95,11 @@ context context::initial(
 )
 {
   std::list<if_state> if_states;
-  std::ostringstream s;
 
-  wave_context_ptr wctx = create_context("", if_states, s, config_, indenter_);
-  for (
-    std::vector<std::string>::const_iterator
-      i = macros_.begin(),
-      e = macros_.end();
-    i != e;
-    ++i
-  )
+  wave_context_ptr wctx = create_context("", if_states, config_, indenter_);
+  BOOST_FOREACH(const std::string& i, macros_)
   {
-    wctx->add_macro_definition(*i);
+    wctx->add_macro_definition(i);
   }
   macro_map m = get_macros(*wctx);
   add_macro<PRESHELL_MAJOR>("__PRESHELL_MAJOR__", m);
