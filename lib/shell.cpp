@@ -78,14 +78,6 @@ const preshell::context& shell::context() const
   return _context->pp_context;
 }
 
-namespace
-{
-  void display_on_stream(std::ostream* out_, std::string& s_)
-  {
-    *out_ << s_;
-  }
-}
-
 void shell::display_splash() const
 {
   using boost::bind;
