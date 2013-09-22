@@ -59,6 +59,11 @@ bool context::tokens_skipped() const
 
 namespace
 {
+  file_position unknown_position()
+  {
+    return file_position("<Unknown>", 1, 1);
+  }
+
   std::string to_string(int n_)
   {
     std::ostringstream s;
@@ -78,13 +83,21 @@ namespace
     const file_position pos("<Unknown>", 1, 1);
 
     m_[name_] =
-      macro_definition(pos, list<token>(1, token(Id, value_.c_str(), pos)));
+      macro_definition(
+        unknown_position(),
+        list<token>(1, token(Id, value_.c_str(), pos))
+      );
   }
 
   template <int Value>
   void add_macro(const std::string& name_, macro_map& m_)
   {
     add_macro<boost::wave::T_INT>(name_, to_string(Value), m_);
+  }
+
+  void add_macro_with_empty_body(const std::string& name_, macro_map& m_)
+  {
+    m_[name_] = macro_definition(unknown_position(), std::list<token>());
   }
 }
 
@@ -102,8 +115,10 @@ context context::initial(
     wctx->add_macro_definition(i);
   }
   macro_map m = get_macros(*wctx);
-  add_macro<PRESHELL_MAJOR>("__PRESHELL_MAJOR__", m);
-  add_macro<PRESHELL_MINOR>("__PRESHELL_MINOR__", m);
+  add_macro_with_empty_body("__PRESHELL", m);
+  add_macro<PRESHELL_MAJOR>("__PRESHELL_MAJOR", m);
+  add_macro<PRESHELL_MINOR>("__PRESHELL_MINOR", m);
+  add_macro<PRESHELL_PATCH>("__PRESHELL_PATCH", m);
   add_macro<boost::wave::T_STRINGLIT>(
     "help",
     "\"Getting help: #pragma wave preshell_help\"",

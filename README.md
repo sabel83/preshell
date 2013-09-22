@@ -114,6 +114,16 @@ used. The following command displays the definition of the macros as well:
 The output of this command can be long, since it displays all macros and their
 actual definition.
 
+### Detecting that a header file is included into a shell
+
+If you are a developer of a header file, you might be interested if it is used
+from Preshell or not. Preshell defines the `__PRESHELL` macro by default which
+you can check, but note that this macro may be undefined.
+
+It is also possible to check the version of Preshell. The macros
+`__PRESHELL_MAJOR`, `__PRESHELL_MINOR` and `__PRESHELL_PATCH` are provided for
+that. Note that these macros can also be undefined or redefined.
+
 ## License
 
 Preshell is published under the
