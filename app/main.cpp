@@ -16,12 +16,90 @@
 
 #include "readline_shell.hpp"
 
+#include <process/process.hpp>
+
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/parsers.hpp>
 
+#include <boost/algorithm/string/trim.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+
+#include <boost/foreach.hpp>
+
 #include <vector>
 #include <string>
+#include <stdexcept>
+
+namespace
+{
+  void append(
+    std::vector<std::string>& v1_,
+    const std::vector<std::string>& v2_
+  )
+  {
+    v1_.insert(v1_.end(), v2_.begin(), v2_.end());
+  }
+
+  std::string run(const std::vector<std::string>& cmd_)
+  {
+    const process::output o = process::run(cmd_, "");
+    return o.standard_output() + o.standard_error();
+  }
+
+  std::string run(const std::string& cmd_, const std::string& arg1_)
+  {
+    std::vector<std::string> cmd;
+    cmd.push_back(cmd_);
+    cmd.push_back(arg1_);
+    return run(cmd);
+  }
+
+  std::vector<std::string> get_gcc_default_sysinclude(
+    const std::string& gcc_path_
+  )
+  {
+    using boost::algorithm::trim_right_copy;
+    using boost::algorithm::trim_left_copy;
+    using boost::algorithm::split;
+    using boost::is_any_of;
+    using boost::starts_with;
+
+    using std::vector;
+    using std::string;
+
+    const string s =
+      run(trim_right_copy(run(gcc_path_, "-print-prog-name=cc1plus")), "-v");
+
+    vector<string> lines;
+    split(lines, s, is_any_of("\n"));
+
+    vector<string> result;
+    bool in_sysinclude = false;
+    BOOST_FOREACH(const string& line, lines)
+    {
+      if (in_sysinclude)
+      {
+        if (starts_with(line, " "))
+        {
+          result.push_back(trim_left_copy(line));
+        }
+        else
+        {
+          return result;
+        }
+      }
+      else if (starts_with(line, "#include <"))
+      {
+        in_sysinclude = true;
+      }
+    }
+
+    return result;
+  }
+}
 
 int main(int argc_, char* argv_[])
 {
@@ -35,19 +113,22 @@ int main(int argc_, char* argv_[])
   using std::vector;
   using std::string;
 
-  preshell::config config;
+  vector<string> include_path;
+  vector<string> sysinclude_path;
   vector<string> macros;
   vector<string> preprocess;
+  string gcc;
 
   options_description desc("Options");
   desc.add_options()
     ("help", "Display help")
-    ("include,I", value(&config.include_path), "Additional include directory")
-    ("sysinclude,S",
-      value(&config.sysinclude_path),
+    ("sysinclude,I",
+      value(&sysinclude_path),
       "Additional system include directory")
+    ("include,i", value(&include_path), "Additional include directory")
     ("define,D", value(&macros), "Define macro (format: name[=[value]])")
     ("preprocess,p", value(&preprocess), "Preprocess code at startup")
+    ("gcc,g", value(&gcc), "Use the default sysinclude path of that gcc binary")
     ;
 
   try
@@ -62,6 +143,13 @@ int main(int argc_, char* argv_[])
     }
     else
     {
+      preshell::config config;
+      if (!gcc.empty())
+      {
+        config.sysinclude_path = get_gcc_default_sysinclude(gcc);
+      }
+      append(config.sysinclude_path, sysinclude_path);
+      append(config.include_path, include_path);
       readline_shell shell(config, macros);
 
       shell.display_splash();
@@ -83,6 +171,11 @@ int main(int argc_, char* argv_[])
   catch (const boost::program_options::error& e_)
   {
     std::cerr << e_.what() << "\n\n" << desc << std::endl;
+    return 1;
+  }
+  catch (const std::exception& e_)
+  {
+    std::cerr << e_.what() << std::endl;
     return 1;
   }
 }
