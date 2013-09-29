@@ -105,8 +105,6 @@ wave_context_ptr preshell::create_context(
     )
   );
 
-  typedef std::vector<std::string>::const_iterator it;
-
   BOOST_FOREACH(const std::string& s, config_.include_path)
   {
     context->add_include_path(s.c_str());
