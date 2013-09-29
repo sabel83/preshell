@@ -40,7 +40,9 @@ The shell is based on the [Boost.Wave](http://boost.org/libs/wave) and the
     * `cd bin`
     * `cmake ..`
     * `make`
-    * `make install`
+    * To install it on the host run `make install`
+    * To package it for Debian or Ubuntu run `cpack -G DEB`
+    * To package it for OpenSUSE or Fedora run `cpack -G RPM`
 
 ## Getting started
 
