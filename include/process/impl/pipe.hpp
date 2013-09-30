@@ -23,7 +23,7 @@ namespace process
       public:
         fds()
         {
-          pipe2(_fd, 0);
+          ::pipe(_fd);
         }
 
         int read_fd() const

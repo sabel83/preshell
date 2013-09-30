@@ -70,7 +70,7 @@ namespace process
           "Error running " + join(cmd_, " ") + ": " + strerror(err)
         );
       }
-      quick_exit(0);
+      _exit(0);
     default: // in parent
       standard_input.input.close();
       standard_input.output.write(input_);
