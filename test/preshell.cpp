@@ -21,9 +21,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <boost/algorithm/string/split.hpp>
-
-#include <boost/phoenix/core.hpp>
-#include <boost/phoenix/operator.hpp>
+#include <boost/algorithm/string/classification.hpp>
 
 #include <list>
 #include <string>
@@ -35,10 +33,8 @@ namespace
 {
   std::list<std::string> split(const std::string& s_)
   {
-    using boost::phoenix::arg_names::arg1;
-
     std::list<std::string> l;
-    return boost::algorithm::split(l, s_, arg1 == '\n');
+    return boost::algorithm::split(l, s_, boost::is_any_of("\n"));
   }
 
   bool contains(const std::string& s_, const std::list<std::string>& l_)
