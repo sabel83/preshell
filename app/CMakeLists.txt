@@ -19,8 +19,8 @@ add_executable(preshell ${SOURCES})
 
 # Readline
 find_package(Readline)
-include_directories(${Readline_INCLUDE_DIR})
-target_link_libraries(preshell ${Readline_LIBRARY})
+include_directories(${READLINE_INCLUDE_DIR})
+target_link_libraries(preshell ${READLINE_LIBRARY})
 
 # Preshell
 target_link_libraries(preshell preshell_lib)
