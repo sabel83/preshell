@@ -1,15 +1,15 @@
 #!/usr/bin/python
 """
-Utility to query the default include PATH of gcc.
+Utility to query the default include PATH of gcc or clang.
 
 Supported options:
 
- -g, --gcc <path>       The binary to use as gcc (default: gcc)
+ -g, --gcc <path>       The binary to use as gcc or clang (default: gcc)
  -h, --help             Display this help message
  -t, --type sys|normal  The type of include path to query (default: sys)
 
 Depending on its argument, the script queries the default
-(system) include path of gcc.
+(system) include path.
 """
 
 # Preshell - Interactive C/C++ preprocessor shell
@@ -33,19 +33,21 @@ import subprocess
 import getopt
 
 def run(cmd):
-  return subprocess.Popen(
-    cmd, 
-    stderr=subprocess.PIPE,
-    stdout=subprocess.PIPE,
-    stdin=subprocess.PIPE
-  ).communicate(input='')
+  try:
+    return subprocess.Popen(
+      cmd,
+      stderr=subprocess.PIPE,
+      stdout=subprocess.PIPE,
+      stdin=subprocess.PIPE
+    ).communicate(input='')
+  except OSError:
+    raise Exception('%s: %s' % (' '.join(cmd), sys.exc_info()[1]))
 
 def get_standard_gcc_includes(gcc):
-  cc1plus = run((gcc, '-print-prog-name=cc1plus'))[0].strip()
   includes = []
   sysincludes = []
   current = None
-  for l in run((cc1plus, '-v'))[1].split('\n'):
+  for l in run((gcc, '-v', '-xc++', '-'))[1].split('\n'):
     retry = True
     while retry:
       retry = False
@@ -86,13 +88,16 @@ def main():
     elif o in('-g', '--gcc'):
       gcc = a
   
-  (normal, system) = get_standard_gcc_includes(gcc)
-  if type == 'sys':
-    paths = system
-  else:
-    paths = normal
-  print '\n'.join([', "%s"' % s for s in paths])
-  print ''
+  try:
+    (normal, system) = get_standard_gcc_includes(gcc)
+    if type == 'sys':
+      paths = system
+    else:
+      paths = normal
+    print '\n'.join([', "%s"' % s for s in paths])
+    print ''
+  except:
+    sys.stderr.write('Error: %s\n' % (sys.exc_info()[1]))
 
 if __name__ == '__main__':
   main()
