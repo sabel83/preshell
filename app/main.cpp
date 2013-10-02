@@ -29,6 +29,8 @@
 
 #include <boost/foreach.hpp>
 
+#include <boost/assign/list_of.hpp>
+
 #include <vector>
 #include <string>
 #include <stdexcept>
@@ -49,19 +51,20 @@ namespace
     return o.standard_output() + o.standard_error();
   }
 
-  std::string run(const std::string& cmd_, const std::string& arg1_)
+  std::string run(
+    const std::string& cmd_,
+    const std::string& arg1_,
+    const std::string& arg2_,
+    const std::string& arg3_
+  )
   {
-    std::vector<std::string> cmd;
-    cmd.push_back(cmd_);
-    cmd.push_back(arg1_);
-    return run(cmd);
+    return run(boost::assign::list_of(cmd_)(arg1_)(arg2_)(arg3_));
   }
 
   std::vector<std::string> get_gcc_default_sysinclude(
     const std::string& gcc_path_
   )
   {
-    using boost::algorithm::trim_right_copy;
     using boost::algorithm::trim_left_copy;
     using boost::algorithm::split;
     using boost::is_any_of;
@@ -70,8 +73,7 @@ namespace
     using std::vector;
     using std::string;
 
-    const string s =
-      run(trim_right_copy(run(gcc_path_, "-print-prog-name=cc1plus")), "-v");
+    const string s = run(gcc_path_, "-v", "-xc++", "-");
 
     vector<string> lines;
     split(lines, s, is_any_of("\n"));
@@ -128,7 +130,9 @@ int main(int argc_, char* argv_[])
     ("include,i", value(&include_path), "Additional include directory")
     ("define,D", value(&macros), "Define macro (format: name[=[value]])")
     ("preprocess,p", value(&preprocess), "Preprocess code at startup")
-    ("gcc,g", value(&gcc), "Use the default sysinclude path of that gcc binary")
+    ("gcc,g",
+      value(&gcc),
+      "Use the default sysinclude path of that gcc or clang binary")
     ;
 
   try
