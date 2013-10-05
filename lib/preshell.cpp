@@ -272,7 +272,7 @@ std::string preshell::remove_protected_macro_definitions(const std::string& s_)
     std::string s;
     if (
       !(
-        il >> s && (s == "#define" || s == "#" && il >> s && s == "define")
+        il >> s && (s == "#define" || (s == "#" && il >> s && s == "define"))
         && il >> s && protected_name(s)
       )
     )

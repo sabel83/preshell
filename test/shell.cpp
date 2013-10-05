@@ -62,6 +62,18 @@ BOOST_AUTO_TEST_CASE(test_redefining_protected_name_in_builtin_macros)
   BOOST_CHECK(sh.error().empty());
 }
 
+BOOST_AUTO_TEST_CASE(
+  test_redefining_protected_name_in_builtin_macros_with_spaces
+)
+{
+  config cfg = config::empty;
+  cfg.builtin_macro_definitions = "  #  define __STDC__ 13\n";
+
+  test_shell sh(cfg);
+
+  BOOST_CHECK(sh.error().empty());
+}
+
 BOOST_AUTO_TEST_CASE(test_including_standard_headers_with_default_config)
 {
   test_shell sh(config::default_config);
