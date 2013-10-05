@@ -50,6 +50,9 @@ namespace preshell
     const preshell::context& context() const;
   
     void cancel_operation();
+
+    // Precondition: line_available has not been called
+    void display_initialisation_diagnostic() const;
   
     static const std::vector<std::string> directives;
   private:
@@ -57,6 +60,12 @@ namespace preshell
     preshell::config _config;
     preshell::result_ptr _context;
     std::string _buffer;
+
+    void precompile_input(const std::string& s_);
+
+    void display_output_if_available() const;
+    void display_info_if_available() const;
+    void display_error_if_available() const;
   };
 }
 

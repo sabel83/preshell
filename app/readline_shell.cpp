@@ -84,6 +84,8 @@ readline_shell::readline_shell(
 {
   assert(!_instance);
   _instance = this;
+
+  display_initialisation_diagnostic();
 }
 
 void readline_shell::run()

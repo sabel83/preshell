@@ -35,13 +35,17 @@ shell::shell(
     boost::bind(&shell::display_info, static_cast<shell*>(this), _1)
   ),
   _config(config_),
-  _context(
-    new preshell::result(
-      preshell::context::initial(config_, macros_, _indenter)
-    )
-  ),
+  _context(new result(context::initial(config_, macros_, _indenter))),
   _buffer()
-{}
+{
+  if (!_config.builtin_macro_definitions.empty())
+  {
+    precompile_input(
+      remove_protected_macro_definitions(_config.builtin_macro_definitions)
+    );
+    _context->pp_context.line = 1;
+  }
+}
 
 shell::~shell() {}
 
@@ -123,18 +127,9 @@ void shell::line_available(const std::string& s_)
     _context = precompile(_buffer, _context->pp_context, _config, _indenter);
     _buffer = "";
 
-    if (_context->output != "")
-    {
-      display_normal(_context->output);
-    }
-    if (_context->info != "")
-    {
-      display_info(_context->info);
-    }
-    if (_context->error != "")
-    {
-      display_error(_context->error);
-    }
+    display_output_if_available();
+    display_info_if_available();
+    display_error_if_available();
   }
 }
 
@@ -144,6 +139,40 @@ std::string shell::prompt() const
     _buffer == "" ?
       (_context->pp_context.tokens_skipped() ? "#if 0 ...> " : "> ") :
       ">>>> ";
+}
+
+void shell::precompile_input(const std::string& s_)
+{
+  _context = precompile(s_, _context->pp_context, _config, _indenter);
+}
+
+void shell::display_output_if_available() const
+{
+  if (_context->output != "")
+  {
+    display_normal(_context->output);
+  }
+}
+
+void shell::display_info_if_available() const
+{
+  if (_context->info != "")
+  {
+    display_info(_context->info);
+  }
+}
+
+void shell::display_error_if_available() const
+{
+  if (_context->error != "")
+  {
+    display_error(_context->error);
+  }
+}
+
+void shell::display_initialisation_diagnostic() const
+{
+  display_error_if_available();
 }
 
 

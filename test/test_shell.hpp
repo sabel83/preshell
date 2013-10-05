@@ -1,3 +1,6 @@
+#ifndef PRESHELL_TEST_TEST_SHELL_HPP
+#define PRESHELL_TEST_TEST_SHELL_HPP
+
 // Preshell - Interactive C/C++ preprocessor shell
 // Copyright (C) 2013, Abel Sinkovics (abel@sinkovics.hu)
 //
@@ -14,35 +17,31 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <preshell/config.hpp>
+#include <preshell/shell.hpp>
 
-using namespace preshell;
+#include <vector>
+#include <string>
+#include <sstream>
 
-namespace
+class test_shell : public preshell::shell
 {
-  const char* default_includes[] =
-    {
-      ""
-      #include "default_include.hpp"
-    };
+public:
+  test_shell(const preshell::config& config_);
+  
+  virtual void display_normal(const std::string& s_) const;
+  virtual void display_info(const std::string& s_) const;
+  virtual void display_error(const std::string& s_) const;
 
-  const char* default_sysincludes[] =
-    {
-      ""
-      #include "default_sysinclude.hpp"
-    };
-}
+  virtual unsigned int width() const;
 
-config::config() {}
+  std::string normal() const;
+  std::string info() const;
+  std::string error() const;
+private:
+  mutable std::ostringstream _normal;
+  mutable std::ostringstream _info;
+  mutable std::ostringstream _error;
+};
 
-const config config::empty;
-
-const config
-  config::default_config(
-    default_includes + 1,
-    default_includes + sizeof(default_includes) / sizeof(const char*),
-    default_sysincludes + 1,
-    default_sysincludes + sizeof(default_sysincludes) / sizeof(const char*),
-    #include "default_defines.hpp"
-  );
+#endif
 

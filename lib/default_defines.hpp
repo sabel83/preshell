@@ -14,35 +14,5 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <preshell/config.hpp>
-
-using namespace preshell;
-
-namespace
-{
-  const char* default_includes[] =
-    {
-      ""
-      #include "default_include.hpp"
-    };
-
-  const char* default_sysincludes[] =
-    {
-      ""
-      #include "default_sysinclude.hpp"
-    };
-}
-
-config::config() {}
-
-const config config::empty;
-
-const config
-  config::default_config(
-    default_includes + 1,
-    default_includes + sizeof(default_includes) / sizeof(const char*),
-    default_sysincludes + 1,
-    default_sysincludes + sizeof(default_sysincludes) / sizeof(const char*),
-    #include "default_defines.hpp"
-  );
+""
 

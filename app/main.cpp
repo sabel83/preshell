@@ -101,6 +101,11 @@ namespace
 
     return result;
   }
+
+  std::string get_gcc_builtin_macros(const std::string& gcc_path_)
+  {
+    return run(gcc_path_, "-dM", "-E", "-");
+  }
 }
 
 int main(int argc_, char* argv_[])
@@ -147,10 +152,11 @@ int main(int argc_, char* argv_[])
     }
     else
     {
-      preshell::config config;
+      preshell::config config = preshell::config::default_config;
       if (!gcc.empty())
       {
         config.sysinclude_path = get_gcc_default_sysinclude(gcc);
+        config.builtin_macro_definitions = get_gcc_builtin_macros(gcc);
       }
       append(config.sysinclude_path, sysinclude_path);
       append(config.include_path, include_path);
@@ -158,15 +164,9 @@ int main(int argc_, char* argv_[])
 
       shell.display_splash();
 
-      for (
-        std::vector<string>::const_iterator
-          i = preprocess.begin(),
-          e = preprocess.end();
-        i != e;
-        ++i
-      )
+      BOOST_FOREACH(const std::string& s, preprocess)
       {
-        shell.line_available(*i);
+        shell.line_available(s);
       }
 
       shell.run();

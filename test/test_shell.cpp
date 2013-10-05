@@ -14,35 +14,50 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <preshell/config.hpp>
+#include "test_shell.hpp"
+
+#include <iostream>
 
 using namespace preshell;
 
-namespace
+test_shell::test_shell(const preshell::config& config_) :
+  shell(config_, std::vector<std::string>())
 {
-  const char* default_includes[] =
-    {
-      ""
-      #include "default_include.hpp"
-    };
-
-  const char* default_sysincludes[] =
-    {
-      ""
-      #include "default_sysinclude.hpp"
-    };
+  display_initialisation_diagnostic();
 }
 
-config::config() {}
+void test_shell::display_normal(const std::string& s_) const
+{
+  _normal << s_;
+}
 
-const config config::empty;
+void test_shell::display_info(const std::string& s_) const
+{
+  _info << s_;
+}
 
-const config
-  config::default_config(
-    default_includes + 1,
-    default_includes + sizeof(default_includes) / sizeof(const char*),
-    default_sysincludes + 1,
-    default_sysincludes + sizeof(default_sysincludes) / sizeof(const char*),
-    #include "default_defines.hpp"
-  );
+void test_shell::display_error(const std::string& s_) const
+{
+  _error << s_;
+}
+
+unsigned int test_shell::width() const
+{
+  return 80;
+}
+
+std::string test_shell::normal() const
+{
+  return _normal.str();
+}
+
+std::string test_shell::info() const
+{
+  return _info.str();
+}
+
+std::string test_shell::error() const
+{
+  return _error.str();
+}
 

@@ -40,6 +40,8 @@ namespace preshell
   // Utility
   void string_escape(const std::string& s_, std::ostream& out_);
   std::string string_escape(const std::string& s_);
+
+  std::string remove_protected_macro_definitions(const std::string& s_);
 }
 
 #endif

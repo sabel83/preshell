@@ -22,12 +22,30 @@
 
 namespace preshell
 {
-  struct config
+  class config
   {
+  public:
     std::vector<std::string> include_path;
     std::vector<std::string> sysinclude_path;
+    std::string builtin_macro_definitions;
 
-    config(); // gives the default config
+    static const config empty;
+    static const config default_config;
+  private:
+    config();
+
+    template <class InputIt>
+    config(
+      InputIt include_path_begin_,
+      InputIt include_path_end_,
+      InputIt sysinclude_path_begin_,
+      InputIt sysinclude_path_end_,
+      const char* builtin_macro_definitions_
+    ) :
+      include_path(include_path_begin_, include_path_end_),
+      sysinclude_path(sysinclude_path_begin_, sysinclude_path_end_),
+      builtin_macro_definitions(builtin_macro_definitions_)
+    {}
   };
 }
 

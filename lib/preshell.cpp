@@ -262,3 +262,24 @@ std::string preshell::string_escape(const std::string& s_)
   return s.str();
 }
 
+std::string preshell::remove_protected_macro_definitions(const std::string& s_)
+{
+  std::istringstream is(s_);
+  std::ostringstream os;
+  for (std::string line; std::getline(is, line);)
+  {
+    std::istringstream il(line);
+    std::string s;
+    if (
+      !(
+        il >> s && (s == "#define" || s == "#" && il >> s && s == "define")
+        && il >> s && protected_name(s)
+      )
+    )
+    {
+      os << line << std::endl;
+    }
+  }
+  return os.str();
+}
+
