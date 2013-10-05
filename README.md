@@ -32,7 +32,7 @@ The shell is based on the [Boost.Wave](http://boost.org/libs/wave) and the
     * Boost.ProgramOptions
     * Readline
 * Install CMake
-* \[Optional\] Set the right system include path and default macro definitions
+* Set the right system include path and default macro definitions
     * This step is important for Preshell to find the same headers GCC or Clang
       uses
     * `tools/gcc_default_path > lib/default_sysinclude.hpp`
