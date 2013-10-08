@@ -45,20 +45,12 @@ namespace
     v1_.insert(v1_.end(), v2_.begin(), v2_.end());
   }
 
-  std::string run(const std::vector<std::string>& cmd_)
+  std::string run(const std::string& cmd_)
   {
-    const process::output o = process::run(cmd_, "");
+    const std::vector<std::string> cmd = boost::assign::list_of<std::string>
+      ("/bin/sh")("-c")(cmd_);
+    const process::output o = process::run(cmd, "");
     return o.standard_output() + o.standard_error();
-  }
-
-  std::string run(
-    const std::string& cmd_,
-    const std::string& arg1_,
-    const std::string& arg2_,
-    const std::string& arg3_
-  )
-  {
-    return run(boost::assign::list_of(cmd_)(arg1_)(arg2_)(arg3_));
   }
 
   std::vector<std::string> get_gcc_default_sysinclude(
@@ -73,7 +65,7 @@ namespace
     using std::vector;
     using std::string;
 
-    const string s = run(gcc_path_, "-v", "-xc++", "-");
+    const string s = run(gcc_path_ + " -v -xc++ -");
 
     vector<string> lines;
     split(lines, s, is_any_of("\n"));
@@ -104,7 +96,7 @@ namespace
 
   std::string get_gcc_builtin_macros(const std::string& gcc_path_)
   {
-    return run(gcc_path_, "-dM", "-E", "-");
+    return run(gcc_path_ + "-dM -E -");
   }
 }
 

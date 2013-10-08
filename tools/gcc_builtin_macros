@@ -31,7 +31,7 @@ import getopt
 def run(cmd):
   try:
     return subprocess.Popen(
-      cmd,
+      ['/bin/sh', '-c', cmd],
       stderr=subprocess.PIPE,
       stdout=subprocess.PIPE,
       stdin=subprocess.PIPE
@@ -79,7 +79,7 @@ def main():
       gcc = a
   
   try:
-    print c_string_literal(run((gcc, '-dM', '-E', '-'))[0])
+    print c_string_literal(run((gcc + ' -dM -E -'))[0])
   except:
     sys.stderr.write('Error: %s\n' % (sys.exc_info()[1]))
 
