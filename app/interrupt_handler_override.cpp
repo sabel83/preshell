@@ -41,7 +41,7 @@ namespace
   {
   }
 #else
-  sighandler_t old_handler;
+  void (*old_handler)(int);
 
   void sigint_handler(int)
   {
