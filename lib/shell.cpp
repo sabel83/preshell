@@ -26,6 +26,39 @@
 
 using namespace preshell;
 
+namespace
+{
+  const char clang_compatibility_macros[] =
+    "#ifndef __has_builtin\n"
+    "#  define __has_builtin(x) 0\n"
+    "#endif\n"
+
+    "#ifndef __has_feature\n"
+    "#  define __has_feature(x) 0\n"
+    "#endif\n"
+
+    "#ifndef __has_extension\n"
+    "#  define __has_extension __has_feature\n"
+    "#endif\n"
+
+    "#ifndef __has_attribute\n"
+    "#  define __has_attribute(x) 0\n"
+    "#endif\n"
+
+    "#ifndef __has_include\n"
+    "#  define __has_include(x) 0\n"
+    "#endif\n"
+
+    "#ifndef __has_include_next\n"
+    "#  define __has_include_next(x) 0\n"
+    "#endif\n"
+
+    "#ifndef __has_warning\n"
+    "#  define __has_warning(x) 0\n"
+    "#endif\n"
+    ;
+}
+
 shell::shell(
   const preshell::config& config_,
   const std::vector<std::string>& macros_
@@ -38,13 +71,16 @@ shell::shell(
   _context(new result(context::initial(config_, macros_, _indenter))),
   _buffer()
 {
+  precompile_input(clang_compatibility_macros);
+
   if (!_config.builtin_macro_definitions.empty())
   {
     precompile_input(
       remove_protected_macro_definitions(_config.builtin_macro_definitions)
     );
-    _context->pp_context.line = 1;
   }
+
+  _context->pp_context.line = 1;
 }
 
 shell::~shell() {}
