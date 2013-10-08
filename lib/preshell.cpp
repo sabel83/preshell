@@ -210,7 +210,11 @@ result_ptr preshell::precompile(
   }
   catch (const boost::wave::cpp_exception& e)
   {
-    r->error = e.description();
+    std::ostringstream s;
+    s
+      << e.file_name() << ":" << e.line_no() << ":" << e.column_no() << ": "
+      << e.description();
+    r->error = s.str();
     r->pp_context = context_;
   }
   catch (const std::exception& e)
