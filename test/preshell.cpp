@@ -344,4 +344,22 @@ BOOST_AUTO_TEST_CASE(test_line_override)
   BOOST_CHECK(contains("__LINE__ 16", split(r5->info)));
 }
 
+BOOST_AUTO_TEST_CASE(test_input_processed_after_warning)
+{
+  config cfg = config::empty;
+
+  result_ptr r1 =
+    precompile(
+      "#define a 1\n"
+      "#define a 2\n"
+      "#define b 3\n",
+      context(),
+      cfg,
+      ind
+    );
+
+  result_ptr r2 = precompile("b", r1->pp_context, cfg, ind);
+
+  BOOST_CHECK_EQUAL("3", r2->output);
+}
 

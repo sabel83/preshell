@@ -22,6 +22,8 @@
 #include <boost/wave/cpp_context.hpp>
 #include <boost/wave/cpp_exceptions.hpp>
 
+#include <boost/algorithm/string/join.hpp>
+
 #include <sstream>
 #include <string>
 #include <vector>
@@ -33,18 +35,74 @@ namespace
 {
   bool cancel_preprocessing = false;
 
-  template <class It>
-  std::string join(It begin_, It end_)
+  bool recoverable(const boost::wave::cpp_exception& e_)
   {
+    return
+      e_.is_recoverable()
+      && e_.get_errorcode()
+        != boost::wave::preprocess_exception::missing_matching_endif;
+  }
+
+  std::string format_error(const boost::wave::cpp_exception& e_)
+  {
+    std::ostringstream s;
+    s
+      << e_.file_name() << ":" << e_.line_no() << ":" << e_.column_no() << ": "
+      << e_.description();
+    return s.str();
+  }
+
+  template <class It, class Cont>
+  bool wave_iterators_equal(It a_, It b_, Cont& warnings_)
+  {
+    using boost::wave::cpp_exception;
+    try
+    {
+      return a_ == b_;
+    }
+    catch (const cpp_exception& e)
+    {
+      if (recoverable(e))
+      {
+        warnings_.push_back(format_error(e));
+      }
+      else
+      {
+        throw;
+      }
+    }
+  }
+
+  template <class It, class Cont>
+  std::string join(It begin_, It end_, Cont& warnings_)
+  {
+    using boost::wave::cpp_exception;
+
     std::ostringstream s;
     try
     {
-      for (It i = begin_; !cancel_preprocessing && i != end_; ++i)
+      It i = begin_;
+      while (!cancel_preprocessing && !wave_iterators_equal(i, end_, warnings_))
       {
         s << i->get_value();
+        try
+        {
+          ++i;
+        }
+        catch (const cpp_exception& e)
+        {
+          if (recoverable(e))
+          {
+            warnings_.push_back(format_error(e));
+          }
+          else
+          {
+            throw;
+          }
+        }
       }
     }
-    catch (const boost::wave::cpp_exception& e)
+    catch (const cpp_exception& e)
     {
       if (
         e.get_errorcode()
@@ -201,18 +259,23 @@ result_ptr preshell::precompile(
 
     log_macro_definitions = config_.log_macro_definitions;
 
-    const std::string output = join(context->begin(), context->end());
+    std::list<std::string> warning_list;
+    const std::string
+      output = join(context->begin(), context->end(), warning_list);
+    const std::string warnings = boost::algorithm::join(warning_list, "\n");
 
     if (cancel_preprocessing)
     {
-      r->error = "Operation cancelled";
+      r->error =
+        (warnings.empty() ? "" : warnings + "\n") + "Operation cancelled";
     }
     else
     {
       // The last character of the output is the extra new line
       r->output =
-        output == "" ? "" : std::string(output.begin(), output.end() - 1);
+        output.empty() ? "" : std::string(output.begin(), output.end() - 1);
       r->info = info.str();
+      r->error = warnings;
       r->pp_context.macros = get_macros(*context);
       r->pp_context.filename = context->get_main_pos().get_file().c_str();
       r->pp_context.line = context->get_main_pos().get_line();
@@ -220,11 +283,7 @@ result_ptr preshell::precompile(
   }
   catch (const boost::wave::cpp_exception& e)
   {
-    std::ostringstream s;
-    s
-      << e.file_name() << ":" << e.line_no() << ":" << e.column_no() << ": "
-      << e.description();
-    r->error = s.str();
+    r->error = format_error(e);
     r->pp_context = context_;
   }
   catch (const std::exception& e)
