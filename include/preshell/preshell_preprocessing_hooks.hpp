@@ -33,6 +33,8 @@
 #include <list>
 #include <iostream>
 #include <set>
+#include <map>
+#include <sstream>
 
 namespace preshell
 {
@@ -42,7 +44,8 @@ namespace preshell
   public:
     preshell_preprocessing_hooks(
       std::list<if_state>& if_states_,
-      indenter& indenter_
+      indenter& indenter_,
+      const bool& log_macro_definitions_
     );
 
     template <class Context, class Container>
@@ -142,11 +145,49 @@ namespace preshell
       process_token(token_);
     }
 
+    template <class Context, class Token, class Parameters, class Definition>
+    void defined_macro(
+      const Context& ctx_,
+      const Token& macro_name_,
+      bool is_functionlike_,
+      const Parameters& parameters_,
+      const Definition& definition_,
+      bool is_predefined_
+    )
+    {
+      if (_log_macro_definitions)
+      {
+        std::ostringstream s;
+        s
+          << macro_name_.get_position().get_file()
+          << ":" << macro_name_.get_position().get_line()
+          << ":" << macro_name_.get_position().get_column()
+          << ": #define " << macro_name_.get_value();
+        _indenter.raw(s.str()).flush();
+      }
+    }
+
+    template <class Context, class Token>
+    void undefined_macro(const Context& ctx_, const Token& macro_name_)
+    {
+      if (_log_macro_definitions)
+      {
+        std::ostringstream s;
+        s
+          << macro_name_.get_position().get_file()
+          << ":" << macro_name_.get_position().get_line()
+          << ":" << macro_name_.get_position().get_column()
+          << ": #undef " << macro_name_.get_value();
+        _indenter.raw(s.str()).flush();
+      }
+    }
+
   private:
     typedef boost::wave::context_policies::default_preprocessing_hooks base;
 
     std::list<if_state>& _if_states;
     indenter& _indenter;
+    const bool& _log_macro_definitions;
 
     template <class Token>
     void process_token(const Token& token_)

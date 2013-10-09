@@ -108,8 +108,10 @@ context context::initial(
 )
 {
   std::list<if_state> if_states;
+  const bool log_macro_definitions = false;
 
-  wave_context_ptr wctx = create_context("", if_states, config_, indenter_);
+  wave_context_ptr wctx =
+    create_context("", if_states, config_, indenter_, log_macro_definitions);
   BOOST_FOREACH(const std::string& i, macros_)
   {
     wctx->add_macro_definition(i);

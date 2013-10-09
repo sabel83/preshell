@@ -17,6 +17,8 @@
 #define BOOST_TEST_MODULE preshell
 
 #include <preshell/preshell.hpp>
+#include <preshell/util.hpp>
+#include "test_util.hpp"
 
 #include <boost/test/unit_test.hpp>
 
@@ -40,17 +42,6 @@ namespace
   bool contains(const std::string& s_, const std::list<std::string>& l_)
   {
     return std::find(l_.begin(), l_.end(), s_) != l_.end();
-  }
-
-  template <unsigned int Result>
-  unsigned int always()
-  {
-    return Result;
-  }
-
-  void should_not_be_called(std::string)
-  {
-    BOOST_CHECK(false);
   }
 
   indenter ind(always<80>, should_not_be_called);

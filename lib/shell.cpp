@@ -18,6 +18,7 @@
 #include <preshell/preshell.hpp>
 #include <preshell/version.hpp>
 #include <preshell/indenter.hpp>
+#include <preshell/util.hpp>
 
 #include <boost/assign/list_of.hpp>
 #include <boost/bind.hpp>
@@ -71,13 +72,27 @@ shell::shell(
   _context(new result(context::initial(config_, macros_, _indenter))),
   _buffer()
 {
+  indenter ignore(&always<80>, throw_away);
+
+  _context =
+    precompile(
+      clang_compatibility_macros,
+      _context->pp_context,
+      _config,
+      ignore
+    );
+
   precompile_input(clang_compatibility_macros);
 
   if (!_config.builtin_macro_definitions.empty())
   {
-    precompile_input(
-      remove_protected_macro_definitions(_config.builtin_macro_definitions)
-    );
+    _context =
+      precompile(
+        remove_protected_macro_definitions(_config.builtin_macro_definitions),
+        _context->pp_context,
+        _config,
+        ignore
+      );
   }
 
   _context->pp_context.line = 1;

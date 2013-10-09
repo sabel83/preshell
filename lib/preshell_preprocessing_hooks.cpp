@@ -22,10 +22,12 @@ using namespace preshell;
 
 preshell_preprocessing_hooks::preshell_preprocessing_hooks(
   std::list<if_state>& if_states_,
-  indenter& indenter_
+  indenter& indenter_,
+  const bool& log_macro_definitions_
 ) :
   _if_states(if_states_),
-  _indenter(indenter_)
+  _indenter(indenter_),
+  _log_macro_definitions(log_macro_definitions_)
 {}
 
 void preshell_preprocessing_hooks::display_help()

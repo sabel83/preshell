@@ -186,10 +186,20 @@ result_ptr preshell::precompile(
     std::ostringstream info;
     indenter info_indenter(indenter_, bind(display_on_stream, &info, _1));
 
+    bool log_macro_definitions = false;
+
     wave_context_ptr context =
-      create_context(input, r->pp_context.if_states, config_, info_indenter);
+      create_context(
+        input,
+        r->pp_context.if_states,
+        config_,
+        info_indenter,
+        log_macro_definitions
+      );
     delete_all_macros(*context);
     add_macros(context_.macros.begin(), context_.macros.end(), *context);
+
+    log_macro_definitions = config_.log_macro_definitions;
 
     const std::string output = join(context->begin(), context->end());
 

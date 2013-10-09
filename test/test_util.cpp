@@ -14,35 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <preshell/config.hpp>
+#include "test_util.hpp"
 
-using namespace preshell;
+#include <boost/test/unit_test.hpp>
 
-namespace
+void should_not_be_called(std::string)
 {
-  const char* default_includes[] =
-    {
-      ""
-      #include "default_include.hpp"
-    };
-
-  const char* default_sysincludes[] =
-    {
-      ""
-      #include "default_sysinclude.hpp"
-    };
+  BOOST_CHECK(false);
 }
-
-config::config() : log_macro_definitions(false) {}
-
-const config config::empty;
-
-const config
-  config::default_config(
-    default_includes + 1,
-    default_includes + sizeof(default_includes) / sizeof(const char*),
-    default_sysincludes + 1,
-    default_sysincludes + sizeof(default_sysincludes) / sizeof(const char*),
-    #include "default_defines.hpp"
-  );
 

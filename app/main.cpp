@@ -127,6 +127,7 @@ int main(int argc_, char* argv_[])
     ("include,i", value(&include_path), "Additional include directory")
     ("define,D", value(&macros), "Define macro (format: name[=[value]])")
     ("preprocess,p", value(&preprocess), "Preprocess code at startup")
+    ("logdef,l", "Log macro definitions and undefinitions")
     ("gcc,g",
       value(&gcc),
       "Use the default sysinclude path of that gcc or clang binary")
@@ -152,6 +153,7 @@ int main(int argc_, char* argv_[])
       }
       append(config.sysinclude_path, sysinclude_path);
       append(config.include_path, include_path);
+      config.log_macro_definitions = vm.count("logdef") || vm.count("l");
       readline_shell shell(config, macros);
 
       shell.display_splash();
