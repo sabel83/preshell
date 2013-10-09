@@ -65,6 +65,7 @@ namespace
       if (recoverable(e))
       {
         warnings_.push_back(format_error(e));
+        return false;
       }
       else
       {
