@@ -29,6 +29,7 @@ namespace preshell
     std::vector<std::string> sysinclude_path;
     std::string builtin_macro_definitions;
     bool log_macro_definitions;
+    bool enable_warnings;
 
     static const config empty;
     static const config default_config;
@@ -46,7 +47,8 @@ namespace preshell
       include_path(include_path_begin_, include_path_end_),
       sysinclude_path(sysinclude_path_begin_, sysinclude_path_end_),
       builtin_macro_definitions(builtin_macro_definitions_),
-      log_macro_definitions(false)
+      log_macro_definitions(false),
+      enable_warnings(true)
     {}
   };
 }

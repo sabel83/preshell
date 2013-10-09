@@ -128,6 +128,7 @@ int main(int argc_, char* argv_[])
     ("define,D", value(&macros), "Define macro (format: name[=[value]])")
     ("preprocess,p", value(&preprocess), "Preprocess code at startup")
     ("logdef,l", "Log macro definitions and undefinitions")
+    ("no-warning,w", "Disable warning messages")
     ("gcc,g",
       value(&gcc),
       "Use the default sysinclude path of that gcc or clang binary")
@@ -154,6 +155,7 @@ int main(int argc_, char* argv_[])
       append(config.sysinclude_path, sysinclude_path);
       append(config.include_path, include_path);
       config.log_macro_definitions = vm.count("logdef") || vm.count("l");
+      config.enable_warnings = !(vm.count("no-warning") || vm.count("w"));
       readline_shell shell(config, macros);
 
       shell.display_splash();

@@ -53,7 +53,7 @@ namespace
   }
 
   template <class It, class Cont>
-  bool wave_iterators_equal(It a_, It b_, Cont& warnings_)
+  bool wave_iterators_equal(It a_, It b_, Cont* warnings_)
   {
     using boost::wave::cpp_exception;
     try
@@ -64,7 +64,10 @@ namespace
     {
       if (recoverable(e))
       {
-        warnings_.push_back(format_error(e));
+        if (warnings_)
+        {
+          warnings_->push_back(format_error(e));
+        }
         return false;
       }
       else
@@ -75,7 +78,7 @@ namespace
   }
 
   template <class It, class Cont>
-  std::string join(It begin_, It end_, Cont& warnings_)
+  std::string join(It begin_, It end_, Cont* warnings_)
   {
     using boost::wave::cpp_exception;
 
@@ -94,7 +97,10 @@ namespace
         {
           if (recoverable(e))
           {
-            warnings_.push_back(format_error(e));
+            if (warnings_)
+            {
+              warnings_->push_back(format_error(e));
+            }
           }
           else
           {
@@ -262,7 +268,11 @@ result_ptr preshell::precompile(
 
     std::list<std::string> warning_list;
     const std::string
-      output = join(context->begin(), context->end(), warning_list);
+      output = join(
+        context->begin(),
+        context->end(),
+        config_.enable_warnings ? &warning_list : 0
+      );
     const std::string warnings = boost::algorithm::join(warning_list, "\n");
 
     if (cancel_preprocessing)

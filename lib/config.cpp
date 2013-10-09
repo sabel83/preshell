@@ -33,7 +33,10 @@ namespace
     };
 }
 
-config::config() : log_macro_definitions(false) {}
+config::config() :
+  log_macro_definitions(false),
+  enable_warnings(true)
+{}
 
 const config config::empty;
 

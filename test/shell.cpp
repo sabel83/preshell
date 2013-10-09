@@ -76,7 +76,10 @@ BOOST_AUTO_TEST_CASE(
 
 BOOST_AUTO_TEST_CASE(test_including_standard_headers_with_default_config)
 {
-  test_shell sh(config::default_config);
+  config cfg = config::default_config;
+  cfg.enable_warnings = false;
+
+  test_shell sh(cfg);
 
   sh.line_available("#include <vector>");
 
