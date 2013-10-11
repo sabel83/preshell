@@ -47,6 +47,9 @@ link_directories(${Boost_LIBRARY_DIRS})
 
 include_directories("include")
 
+# Readline
+find_package(Readline)
+
 # Unit testing
 enable_testing()
 

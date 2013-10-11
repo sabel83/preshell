@@ -18,7 +18,6 @@ aux_source_directory(. SOURCES)
 add_executable(preshell ${SOURCES})
 
 # Readline
-find_package(Readline)
 include_directories(${READLINE_INCLUDE_DIR})
 target_link_libraries(preshell ${READLINE_LIBRARY})
 
