@@ -57,6 +57,8 @@ enable_testing()
 subdirs(lib test app)
 
 # Debian package
+set(CMAKE_INSTALL_PREFIX "/usr")
+
 if(EXISTS "${CMAKE_ROOT}/Modules/CPack.cmake")
   include(InstallRequiredSystemLibraries)
    
