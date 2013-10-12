@@ -41,9 +41,6 @@ The shell is based on the [Boost.Wave](http://boost.org/libs/wave) and the
     * `mkdir bin`
     * `cd bin`
     * `cmake ..`
-        * The compiled binary will be installed into `/usr/local/bin` by
-          default. To install it into `/usr/bin` instead, you need to run
-          `cmake .. -DCMAKE_INSTALL_PREFIX=/usr`
     * `make`
     * To install it on the host run `make install`
     * To package it for Debian or Ubuntu run `cpack -G DEB`
