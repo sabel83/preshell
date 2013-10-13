@@ -13,6 +13,16 @@ user.
 The shell is based on the [Boost.Wave](http://boost.org/libs/wave) and the
 [Readline](http://www.gnu.org/software/readline) libraries.
 
+## Table of contents
+
+- [Features](#features)
+- [Building Preshell](#building-preshell)
+- [Getting started](#getting-started)
+    - [Evaluating simple expressions](#evaluating-simple-expressions)
+    - [Checking which macros are available](#checking-which-macros-are-available)
+    - [Detecting that a header file is included into a shell](#detecting-that-a-header-file-is-included-into-a-shell)
+- [License](#license)
+
 ## Features
 
 * History of commands used
