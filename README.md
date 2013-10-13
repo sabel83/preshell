@@ -54,10 +54,6 @@ The shell is based on the [Boost.Wave](http://boost.org/libs/wave) and the
     * `make`
     * To install it on the host run `make install`
     * To package it for Debian or Ubuntu run `cpack -G DEB`
-        * Note: the dependencies are configured for Ubuntu 13.04. To package it
-          for another system, check the dependency list. The Boost library
-          version the package will depend on may be different. Update the value
-          of `CPACK_DEBIAN_PACKAGE_DEPENDS` in `CMakeLists.txt`.
     * To package it for OpenSUSE or Fedora run `cpack -G RPM`
 
 ## Getting started
