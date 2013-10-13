@@ -45,6 +45,12 @@ find_package(Threads) # used by Boost.Thread
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
 
+set(
+  BOOST_VER
+  "${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}.${Boost_SUBMINOR_VERSION}"
+)
+
+
 include_directories("include")
 
 # Readline
@@ -76,7 +82,7 @@ if(EXISTS "${CMAKE_ROOT}/Modules/CPack.cmake")
   set(CPACK_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}_${MAJOR_VERSION}.${MINOR_VERSION}.${CPACK_PACKAGE_VERSION_PATCH}_${CMAKE_SYSTEM_PROCESSOR}")
   set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}_${MAJOR_VERSION}.${MINOR_VERSION}.${CPACK_PACKAGE_VERSION_PATCH}")
 
-  set(CPACK_DEBIAN_PACKAGE_DEPENDS "libboost-system1.49.0, libboost-thread1.49.0, libboost-filesystem1.49.0, libboost-wave1.49.0, libboost-program-options1.49.0")
+  set(CPACK_DEBIAN_PACKAGE_DEPENDS "libboost-system${BOOST_VER}, libboost-thread${BOOST_VER}, libboost-filesystem${BOOST_VER}, libboost-wave${BOOST_VER}, libboost-program-options${BOOST_VER}")
   set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
   set(CPACK_DEBIAN_PACKAGE_SECTION "devel")
   set(CPACK_DEBIAN_ARCHITECTURE ${CMAKE_SYSTEM_PROCESSOR})
@@ -85,6 +91,5 @@ if(EXISTS "${CMAKE_ROOT}/Modules/CPack.cmake")
   include(CPack)
    
 endif(EXISTS "${CMAKE_ROOT}/Modules/CPack.cmake")
-
 
 
