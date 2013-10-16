@@ -137,9 +137,23 @@ void shell::display_splash() const
 {
   using boost::bind;
 
-  indenter(bind(&shell::width, this), bind(&shell::display_normal, this, _1))
+  const std::string version_desc =
+    #include "version_desc.hpp"
+  ;
+
+  indenter
+    ind(bind(&shell::width, this), bind(&shell::display_normal, this, _1));
+
+  ind
     .raw("/*")
-    .left_align("Preprocessor shell " + preshell::version(), " * ")
+    .left_align("Preprocessor shell " + preshell::version(), " * ");
+
+  if (!version_desc.empty())
+  {
+    ind.left_align(version_desc, " * ");
+  }
+
+  ind
     .raw(" * ")
     .left_align(
       "Preshell Copyright (C) 2013 Abel Sinkovics (abel@sinkovics.hu)",
