@@ -22,8 +22,11 @@
 #include <preshell/config.hpp>
 #include <preshell/indenter.hpp>
 
+#include <boost/wave/cpp_exceptions.hpp>
+
 #include <string>
-#include <iosfwd>
+#include <iostream>
+#include <sstream>
 
 namespace preshell
 {
@@ -42,6 +45,111 @@ namespace preshell
   std::string string_escape(const std::string& s_);
 
   std::string remove_protected_macro_definitions(const std::string& s_);
+
+  bool recoverable(const boost::wave::cpp_exception& e_);
+  std::string format_error(const boost::wave::cpp_exception& e_);
+
+  template <class It, class Cont>
+  bool wave_iterators_equal(It a_, It b_, Cont* warnings_)
+  {
+    using boost::wave::cpp_exception;
+    try
+    {
+      return a_ == b_;
+    }
+    catch (const cpp_exception& e)
+    {
+      if (recoverable(e))
+      {
+        if (warnings_)
+        {
+          warnings_->push_back(format_error(e));
+        }
+        return false;
+      }
+      else
+      {
+        throw;
+      }
+    }
+  }
+
+  template <class It, class Cont>
+  std::string join(
+    It begin_,
+    It end_,
+    Cont* warnings_,
+    const bool& cancel_preprocessing_,
+    bool suppress_empty_lines_
+  )
+  {
+    using boost::wave::cpp_exception;
+
+    std::ostringstream s;
+    try
+    {
+      std::ostringstream current_line;
+      It i = begin_;
+      while (
+        !cancel_preprocessing_ && !wave_iterators_equal(i, end_, warnings_)
+      )
+      {
+        if (IS_CATEGORY(*i, boost::wave::EOLTokenType))
+        {
+          const std::string l = current_line.str();
+          current_line.str(std::string());
+          if (!(l.empty() && suppress_empty_lines_))
+          {
+            s << l << i->get_value();
+          }
+        }
+        else if (*i == boost::wave::T_CPPCOMMENT)
+        {
+          s << current_line.str() << i->get_value();
+          current_line.str(std::string());
+        }
+        else
+        {
+          current_line << i->get_value();
+        }
+        try
+        {
+          ++i;
+        }
+        catch (const cpp_exception& e)
+        {
+          if (recoverable(e))
+          {
+            if (warnings_)
+            {
+              warnings_->push_back(format_error(e));
+            }
+          }
+          else
+          {
+            throw;
+          }
+        }
+      }
+      const std::string l = current_line.str();
+      if (!l.empty())
+      {
+        s << l;
+      }
+    }
+    catch (const cpp_exception& e)
+    {
+      if (
+        e.get_errorcode()
+        != boost::wave::preprocess_exception::missing_matching_endif
+      )
+      {
+        throw;
+      }
+    }
+    return s.str();
+  }
+
 }
 
 #endif

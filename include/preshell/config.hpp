@@ -30,6 +30,7 @@ namespace preshell
     std::string builtin_macro_definitions;
     bool log_macro_definitions;
     bool enable_warnings;
+    bool suppress_empty_lines_in_output;
 
     static const config empty;
     static const config default_config;
@@ -48,7 +49,8 @@ namespace preshell
       sysinclude_path(sysinclude_path_begin_, sysinclude_path_end_),
       builtin_macro_definitions(builtin_macro_definitions_),
       log_macro_definitions(false),
-      enable_warnings(true)
+      enable_warnings(true),
+      suppress_empty_lines_in_output(false)
     {}
   };
 }

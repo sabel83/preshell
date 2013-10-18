@@ -129,6 +129,7 @@ int main(int argc_, char* argv_[])
     ("preprocess,p", value(&preprocess), "Preprocess code at startup")
     ("logdef,l", "Log macro definitions and undefinitions")
     ("no-warning,w", "Disable warning messages")
+    ("suppress-empty-lines,e", "Suppress empty lines in output")
     ("gcc,g",
       value(&gcc),
       "Use the default sysinclude path of that gcc or clang binary")
@@ -156,6 +157,8 @@ int main(int argc_, char* argv_[])
       append(config.include_path, include_path);
       config.log_macro_definitions = vm.count("logdef") || vm.count("l");
       config.enable_warnings = !(vm.count("no-warning") || vm.count("w"));
+      config.suppress_empty_lines_in_output =
+        vm.count("suppress-empty-lines") || vm.count("e");
       readline_shell shell(config, macros);
 
       shell.display_splash();

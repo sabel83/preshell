@@ -20,7 +20,6 @@
 #include <preshell/preshell_preprocessing_hooks.hpp>
 
 #include <boost/wave/cpp_context.hpp>
-#include <boost/wave/cpp_exceptions.hpp>
 
 #include <boost/algorithm/string/join.hpp>
 
@@ -34,93 +33,6 @@ using namespace preshell;
 namespace
 {
   bool cancel_preprocessing = false;
-
-  bool recoverable(const boost::wave::cpp_exception& e_)
-  {
-    return
-      e_.is_recoverable()
-      && e_.get_errorcode()
-        != boost::wave::preprocess_exception::missing_matching_endif;
-  }
-
-  std::string format_error(const boost::wave::cpp_exception& e_)
-  {
-    std::ostringstream s;
-    s
-      << e_.file_name() << ":" << e_.line_no() << ":" << e_.column_no() << ": "
-      << e_.description();
-    return s.str();
-  }
-
-  template <class It, class Cont>
-  bool wave_iterators_equal(It a_, It b_, Cont* warnings_)
-  {
-    using boost::wave::cpp_exception;
-    try
-    {
-      return a_ == b_;
-    }
-    catch (const cpp_exception& e)
-    {
-      if (recoverable(e))
-      {
-        if (warnings_)
-        {
-          warnings_->push_back(format_error(e));
-        }
-        return false;
-      }
-      else
-      {
-        throw;
-      }
-    }
-  }
-
-  template <class It, class Cont>
-  std::string join(It begin_, It end_, Cont* warnings_)
-  {
-    using boost::wave::cpp_exception;
-
-    std::ostringstream s;
-    try
-    {
-      It i = begin_;
-      while (!cancel_preprocessing && !wave_iterators_equal(i, end_, warnings_))
-      {
-        s << i->get_value();
-        try
-        {
-          ++i;
-        }
-        catch (const cpp_exception& e)
-        {
-          if (recoverable(e))
-          {
-            if (warnings_)
-            {
-              warnings_->push_back(format_error(e));
-            }
-          }
-          else
-          {
-            throw;
-          }
-        }
-      }
-    }
-    catch (const cpp_exception& e)
-    {
-      if (
-        e.get_errorcode()
-        != boost::wave::preprocess_exception::missing_matching_endif
-      )
-      {
-        throw;
-      }
-    }
-    return s.str();
-  }
 
   template <class String>
   bool protected_name(const String& s)
@@ -271,7 +183,9 @@ result_ptr preshell::precompile(
       output = join(
         context->begin(),
         context->end(),
-        config_.enable_warnings ? &warning_list : 0
+        config_.enable_warnings ? &warning_list : 0,
+        cancel_preprocessing,
+        config_.suppress_empty_lines_in_output
       );
     const std::string warnings = boost::algorithm::join(warning_list, "\n");
 
@@ -366,4 +280,22 @@ std::string preshell::remove_protected_macro_definitions(const std::string& s_)
   }
   return os.str();
 }
+
+bool preshell::recoverable(const boost::wave::cpp_exception& e_)
+{
+  return
+    e_.is_recoverable() &&
+    e_.get_errorcode()
+      != boost::wave::preprocess_exception::missing_matching_endif;
+}
+
+std::string preshell::format_error(const boost::wave::cpp_exception& e_)
+{
+  std::ostringstream s;
+  s
+    << e_.file_name() << ":" << e_.line_no() << ":" << e_.column_no() << ": "
+    << e_.description();
+  return s.str();
+}
+
 
