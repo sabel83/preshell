@@ -4,6 +4,8 @@
 
 ![](https://raw.github.com/sabel83/preshell/master/preshell.png "Preshell")
 
+[![Download](download.png "Download")](https://github.com/sabel83/preshell/releases)
+
 Preshell is an interactive C/C++ preprocessor shell. It is intended to be used
 for trying out non-trivial preprocessor usage, such us using the macros of
 [Boost.Preprocessor](http://boost.org/libs/preprocessor).
