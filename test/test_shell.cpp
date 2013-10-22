@@ -21,7 +21,15 @@
 using namespace preshell;
 
 test_shell::test_shell(const preshell::config& config_) :
-  shell(config_, std::vector<std::string>())
+  shell(config_, std::vector<std::string>()),
+  _history(0)
+{
+  display_initialisation_diagnostic();
+}
+
+test_shell::test_shell(std::vector<std::string>& history_) :
+  shell(preshell::config::default_config, std::vector<std::string>()),
+  _history(&history_)
 {
   display_initialisation_diagnostic();
 }
@@ -59,5 +67,13 @@ std::string test_shell::info() const
 std::string test_shell::error() const
 {
   return _error.str();
+}
+
+void test_shell::add_history(const std::string& s_)
+{
+  if (_history)
+  {
+    _history->push_back(s_);
+  }
 }
 

@@ -35,6 +35,8 @@ namespace preshell
       const std::vector<std::string>& macros_
     );
     virtual ~shell();
+
+    virtual void add_history(const std::string& s_) = 0;
   
     virtual void display_normal(const std::string& s_) const = 0;
     virtual void display_info(const std::string& s_) const = 0;

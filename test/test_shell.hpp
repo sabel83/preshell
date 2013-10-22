@@ -27,6 +27,9 @@ class test_shell : public preshell::shell
 {
 public:
   test_shell(const preshell::config& config_);
+  test_shell(std::vector<std::string>& history_);
+
+  virtual void add_history(const std::string& s_);
   
   virtual void display_normal(const std::string& s_) const;
   virtual void display_info(const std::string& s_) const;
@@ -41,6 +44,8 @@ private:
   mutable std::ostringstream _normal;
   mutable std::ostringstream _info;
   mutable std::ostringstream _error;
+
+  std::vector<std::string>* _history; // no ownership
 };
 
 #endif

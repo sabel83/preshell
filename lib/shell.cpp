@@ -185,6 +185,11 @@ void shell::display_splash() const
 
 void shell::line_available(const std::string& s_)
 {
+  if (!s_.empty())
+  {
+    add_history(s_);
+  }
+
   _buffer += (_buffer == "" ? "" : "\n") + s_;
 
   if (!preshell::continuation_needed(_buffer, _config))
