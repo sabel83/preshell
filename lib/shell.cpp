@@ -185,9 +185,10 @@ void shell::display_splash() const
 
 void shell::line_available(const std::string& s_)
 {
-  if (!s_.empty())
+  if (!s_.empty() && s_ != _prev_line)
   {
     add_history(s_);
+    _prev_line = s_;
   }
 
   _buffer += (_buffer == "" ? "" : "\n") + s_;

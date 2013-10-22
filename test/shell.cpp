@@ -109,3 +109,17 @@ BOOST_AUTO_TEST_CASE(test_empty_line_is_not_stored_in_history)
   BOOST_CHECK_EQUAL(0, history.size());
 }
 
+BOOST_AUTO_TEST_CASE(
+  test_the_same_thing_following_each_other_is_not_added_to_history_twice
+)
+{
+  std::vector<std::string> history;
+  test_shell sh(history);
+
+  sh.line_available("int");
+  sh.line_available("int");
+
+  BOOST_REQUIRE_EQUAL(1, history.size());
+  BOOST_CHECK_EQUAL("int", history.front());
+}
+

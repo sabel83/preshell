@@ -62,6 +62,7 @@ namespace preshell
     preshell::config _config;
     preshell::result_ptr _context;
     std::string _buffer;
+    std::string _prev_line;
 
     void precompile_input(const std::string& s_);
 
