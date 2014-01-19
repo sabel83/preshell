@@ -23,6 +23,7 @@
 #include <preshell/indenter.hpp>
 
 #include <vector>
+#include <list>
 #include <string>
 
 namespace preshell
@@ -57,12 +58,15 @@ namespace preshell
     void display_initialisation_diagnostic() const;
   
     static const std::vector<std::string> directives;
+
+    const std::list<std::string>& history() const;
   private:
     indenter _indenter;
     preshell::config _config;
     preshell::result_ptr _context;
     std::string _buffer;
     std::string _prev_line;
+    std::list<std::string> _history;
 
     void precompile_input(const std::string& s_);
 

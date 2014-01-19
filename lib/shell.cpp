@@ -185,10 +185,14 @@ void shell::display_splash() const
 
 void shell::line_available(const std::string& s_)
 {
-  if (!s_.empty() && s_ != _prev_line)
+  if (!s_.empty())
   {
-    add_history(s_);
-    _prev_line = s_;
+    if (s_ != _prev_line)
+    {
+      add_history(s_);
+      _prev_line = s_;
+    }
+    _history.push_back(s_);
   }
 
   _buffer += (_buffer == "" ? "" : "\n") + s_;
@@ -244,6 +248,11 @@ void shell::display_error_if_available() const
 void shell::display_initialisation_diagnostic() const
 {
   display_error_if_available();
+}
+
+const std::list<std::string>& shell::history() const
+{
+  return _history;
 }
 
 
