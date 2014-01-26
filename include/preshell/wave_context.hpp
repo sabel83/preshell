@@ -48,8 +48,11 @@ namespace preshell
     const std::string& input_,
     std::list<if_state>& if_states_,
     const config& config_,
-    indenter& indenter_,
-    const bool& log_macro_definitions_
+    indenter& info_indenter_,
+    indenter& error_indenter_,
+    const bool& log_macro_definitions_,
+    const std::list<std::string>& history_,
+    const bool& enable_save_history_
   );
 
   macro_map get_macros(const wave_context& context_);

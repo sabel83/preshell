@@ -31,5 +31,8 @@ target_link_libraries(preshell_test
   ${CMAKE_THREAD_LIBS_INIT}
 )
 
+# Program_options
+target_link_libraries(preshell_test ${Boost_PROGRAM_OPTIONS_LIBRARIES})
+
 add_test(preshell_unit_tests preshell_test)
 

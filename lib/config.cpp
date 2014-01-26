@@ -36,7 +36,8 @@ namespace
 config::config() :
   log_macro_definitions(false),
   enable_warnings(true),
-  suppress_empty_lines_in_output(false)
+  suppress_empty_lines_in_output(false),
+  enable_save_history(false)
 {}
 
 const config config::empty;

@@ -18,6 +18,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
+#include <sstream>
+#include <iostream>
 
 namespace preshell
 {
@@ -28,6 +30,19 @@ namespace preshell
   }
 
   void throw_away(std::string);
+
+  template <class Iterator>
+  static std::string token_list_to_string(Iterator begin_, Iterator end_)
+  {
+    std::ostringstream s;
+    for (Iterator i = begin_; i != end_; ++i)
+    {
+      s << i->get_value();
+    }
+    return s.str();
+  }
+
+  bool is_pragma_usage(const std::string& s_);
 }
 
 #endif

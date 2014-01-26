@@ -125,6 +125,11 @@ namespace
     s << "\"\n" << input_ << '\n';
     return s.str();
   }
+
+  std::string join_with_new_line(const std::string& a_, const std::string& b_)
+  {
+    return !(a_.empty() || b_.empty()) ? a_ + "\n" + b_ : a_ + b_;
+  }
 }
 
 namespace
@@ -139,7 +144,8 @@ result_ptr preshell::precompile(
   const std::string& input_,
   const context& context_,
   const config& config_,
-  indenter& indenter_
+  indenter& indenter_,
+  const std::list<std::string>& history_
 )
 {
   using boost::bind;
@@ -163,7 +169,11 @@ result_ptr preshell::precompile(
     std::ostringstream info;
     indenter info_indenter(indenter_, bind(display_on_stream, &info, _1));
 
+    std::ostringstream error;
+    indenter error_indenter(indenter_, bind(display_on_stream, &error, _1));
+
     bool log_macro_definitions = false;
+    bool enable_save_history = false;
 
     wave_context_ptr context =
       create_context(
@@ -171,12 +181,16 @@ result_ptr preshell::precompile(
         r->pp_context.if_states,
         config_,
         info_indenter,
-        log_macro_definitions
+        error_indenter,
+        log_macro_definitions,
+        history_,
+        enable_save_history
       );
     delete_all_macros(*context);
     add_macros(context_.macros.begin(), context_.macros.end(), *context);
 
     log_macro_definitions = config_.log_macro_definitions;
+    enable_save_history = config_.enable_save_history;
 
     std::list<std::string> warning_list;
     const std::string
@@ -200,7 +214,7 @@ result_ptr preshell::precompile(
       r->output =
         output.empty() ? "" : std::string(output.begin(), output.end() - 1);
       r->info = info.str();
-      r->error = warnings;
+      r->error = join_with_new_line(error.str(), warnings);
       r->pp_context.macros = get_macros(*context);
       r->pp_context.filename = context->get_main_pos().get_file().c_str();
       r->pp_context.line = context->get_main_pos().get_line();

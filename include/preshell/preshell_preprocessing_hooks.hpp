@@ -20,6 +20,7 @@
 #include <preshell/if_state.hpp>
 #include <preshell/preshell.hpp>
 #include <preshell/indenter.hpp>
+#include <preshell/util.hpp>
 
 #include <boost/wave/cpp_context.hpp>
 
@@ -41,11 +42,16 @@ namespace preshell
   class preshell_preprocessing_hooks :
     public boost::wave::context_policies::default_preprocessing_hooks
   {
+  private:
+    void save_history(const std::string& filename_);
   public:
     preshell_preprocessing_hooks(
       std::list<if_state>& if_states_,
-      indenter& indenter_,
-      const bool& log_macro_definitions_
+      indenter& info_indenter_,
+      indenter& error_indenter_,
+      const bool& log_macro_definitions_,
+      const std::list<std::string>& history_,
+      const bool& enable_save_history_
     );
 
     template <class Context, class Container>
@@ -77,7 +83,7 @@ namespace preshell
         using boost::adaptors::transformed;
         using boost::bind;
 
-        _indenter
+        _info_indenter
           .raw(
             join(
               macro_names(ctx_)
@@ -86,6 +92,27 @@ namespace preshell
             )
           )
           .flush();
+        return true;
+      }
+      else if (option_.get_value() == "save_history")
+      {
+        if (values_.empty())
+        {
+          _error_indenter
+            .left_align("Usage: save_history(<filename>)")
+            .flush();
+        }
+        else if (!_enable_save_history)
+        {
+          _error_indenter.left_align(
+            "Saving history is disabled. You can enable it by the "
+            "-H command line argument."
+          ).flush();
+        }
+        else
+        {
+          save_history(token_list_to_string(values_.begin(), values_.end()));
+        }
         return true;
       }
 
@@ -163,7 +190,7 @@ namespace preshell
           << ":" << macro_name_.get_position().get_line()
           << ":" << macro_name_.get_position().get_column()
           << ": #define " << macro_name_.get_value();
-        _indenter.raw(s.str()).flush();
+        _info_indenter.raw(s.str()).flush();
       }
     }
 
@@ -178,7 +205,7 @@ namespace preshell
           << ":" << macro_name_.get_position().get_line()
           << ":" << macro_name_.get_position().get_column()
           << ": #undef " << macro_name_.get_value();
-        _indenter.raw(s.str()).flush();
+        _info_indenter.raw(s.str()).flush();
       }
     }
 
@@ -186,8 +213,11 @@ namespace preshell
     typedef boost::wave::context_policies::default_preprocessing_hooks base;
 
     std::list<if_state>& _if_states;
-    indenter& _indenter;
+    indenter& _info_indenter;
+    indenter& _error_indenter;
     const bool& _log_macro_definitions;
+    const std::list<std::string>& _history;
+    const bool& _enable_save_history;
 
     template <class Token>
     void process_token(const Token& token_)

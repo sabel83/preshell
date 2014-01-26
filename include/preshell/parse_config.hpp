@@ -1,5 +1,8 @@
+#ifndef PRESHELL_PARSE_CONFIG_HPP
+#define PRESHELL_PARSE_CONFIG_HPP
+
 // Preshell - Interactive C/C++ preprocessor shell
-// Copyright (C) 2013, Abel Sinkovics (abel@sinkovics.hu)
+// Copyright (C) 2014, Abel Sinkovics (abel@sinkovics.hu)
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,33 +17,33 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <preshell/util.hpp>
-#include <preshell/token.hpp>
+#include <preshell/config.hpp>
 
-#include <boost/wave/cpplexer/cpp_lex_iterator.hpp>
+#include <iosfwd>
+#include <vector>
+#include <string>
 
-#include <algorithm>
-
-using namespace preshell;
-
-void preshell::throw_away(std::string)
-{}
-
-bool preshell::is_pragma_usage(const std::string& s_)
+namespace preshell
 {
-  using boost::wave::cpplexer::lex_iterator;
-  using boost::wave::language_support;
+  enum parse_config_result
+  {
+    run_shell,
+    exit_with_error,
+    exit_without_error
+  };
 
-  const file_position pos("<std::string>");
-  const language_support lng = boost::wave::support_cpp;
-  const lex_iterator<token> e;
-  const std::string s(s_ + "\n");
-  return
-    std::find(
-      lex_iterator<token>(s.begin(), s.end(), pos, lng),
-      e,
-      boost::wave::T_PP_PRAGMA
-    ) != e;
+  parse_config_result parse_config(
+    config& cfg_,
+    std::vector<std::string>& macros_,
+    std::vector<std::string>& preprocess_,
+
+    int argc_,
+    const char* argv_[],
+
+    std::ostream* out_ = 0,
+    std::ostream* err_ = 0
+  );
 }
 
+#endif
 

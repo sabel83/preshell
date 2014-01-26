@@ -16,170 +16,40 @@
 
 #include "readline_shell.hpp"
 
-#include <process/process.hpp>
-
-#include <boost/program_options/options_description.hpp>
-#include <boost/program_options/variables_map.hpp>
-#include <boost/program_options/parsers.hpp>
-
-#include <boost/algorithm/string/trim.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/predicate.hpp>
+#include <preshell/parse_config.hpp>
 
 #include <boost/foreach.hpp>
 
-#include <boost/assign/list_of.hpp>
-
-#include <vector>
-#include <string>
-#include <stdexcept>
-
-namespace
+int main(int argc_, const char* argv_[])
 {
-  void append(
-    std::vector<std::string>& v1_,
-    const std::vector<std::string>& v2_
-  )
+  preshell::config config = preshell::config::default_config;
+  std::vector<std::string> macros;
+  std::vector<std::string> preprocess;
+
+  const preshell::parse_config_result r =
+    preshell::parse_config(
+      config,
+      macros,
+      preprocess,
+
+      argc_, argv_,
+      &std::cout, &std::cerr
+    );
+
+  if (r == preshell::run_shell)
   {
-    v1_.insert(v1_.end(), v2_.begin(), v2_.end());
-  }
+    readline_shell shell(config, macros);
 
-  std::string run(const std::string& cmd_)
-  {
-    const std::vector<std::string> cmd = boost::assign::list_of<std::string>
-      ("/bin/sh")("-c")(cmd_);
-    const process::output o = process::run(cmd, "");
-    return o.standard_output() + o.standard_error();
-  }
+    shell.display_splash();
 
-  std::vector<std::string> get_gcc_default_sysinclude(
-    const std::string& gcc_path_
-  )
-  {
-    using boost::algorithm::trim_left_copy;
-    using boost::algorithm::split;
-    using boost::is_any_of;
-    using boost::starts_with;
-
-    using std::vector;
-    using std::string;
-
-    const string s = run(gcc_path_ + " -v -xc++ -");
-
-    vector<string> lines;
-    split(lines, s, is_any_of("\n"));
-
-    vector<string> result;
-    bool in_sysinclude = false;
-    BOOST_FOREACH(const string& line, lines)
+    BOOST_FOREACH(const std::string& s, preprocess)
     {
-      if (in_sysinclude)
-      {
-        if (starts_with(line, " "))
-        {
-          result.push_back(trim_left_copy(line));
-        }
-        else
-        {
-          return result;
-        }
-      }
-      else if (starts_with(line, "#include <"))
-      {
-        in_sysinclude = true;
-      }
+      shell.line_available(s);
     }
 
-    return result;
+    shell.run();
   }
 
-  std::string get_gcc_builtin_macros(const std::string& gcc_path_)
-  {
-    return run(gcc_path_ + "-dM -E -");
-  }
-}
-
-int main(int argc_, char* argv_[])
-{
-  using boost::program_options::options_description;
-  using boost::program_options::variables_map;
-  using boost::program_options::store;
-  using boost::program_options::notify;
-  using boost::program_options::parse_command_line;
-  using boost::program_options::value;
-
-  using std::vector;
-  using std::string;
-
-  vector<string> include_path;
-  vector<string> sysinclude_path;
-  vector<string> macros;
-  vector<string> preprocess;
-  string gcc;
-
-  options_description desc("Options");
-  desc.add_options()
-    ("help", "Display help")
-    ("sysinclude,I",
-      value(&sysinclude_path),
-      "Additional system include directory")
-    ("include,i", value(&include_path), "Additional include directory")
-    ("define,D", value(&macros), "Define macro (format: name[=[value]])")
-    ("preprocess,p", value(&preprocess), "Preprocess code at startup")
-    ("logdef,l", "Log macro definitions and undefinitions")
-    ("no-warning,w", "Disable warning messages")
-    ("suppress-empty-lines,e", "Suppress empty lines in output")
-    ("gcc,g",
-      value(&gcc),
-      "Use the default sysinclude path of that gcc or clang binary")
-    ;
-
-  try
-  {
-    variables_map vm;
-    store(parse_command_line(argc_, argv_, desc), vm);
-    notify(vm);
-
-    if (vm.count("help"))
-    {
-      std::cout << desc << std::endl;
-    }
-    else
-    {
-      preshell::config config = preshell::config::default_config;
-      if (!gcc.empty())
-      {
-        config.sysinclude_path = get_gcc_default_sysinclude(gcc);
-        config.builtin_macro_definitions = get_gcc_builtin_macros(gcc);
-      }
-      append(config.sysinclude_path, sysinclude_path);
-      append(config.include_path, include_path);
-      config.log_macro_definitions = vm.count("logdef") || vm.count("l");
-      config.enable_warnings = !(vm.count("no-warning") || vm.count("w"));
-      config.suppress_empty_lines_in_output =
-        vm.count("suppress-empty-lines") || vm.count("e");
-      readline_shell shell(config, macros);
-
-      shell.display_splash();
-
-      BOOST_FOREACH(const std::string& s, preprocess)
-      {
-        shell.line_available(s);
-      }
-
-      shell.run();
-    }
-  }
-  catch (const boost::program_options::error& e_)
-  {
-    std::cerr << e_.what() << "\n\n" << desc << std::endl;
-    return 1;
-  }
-  catch (const std::exception& e_)
-  {
-    std::cerr << e_.what() << std::endl;
-    return 1;
-  }
+  return r == preshell::exit_with_error ? 1 : 0;
 }
 

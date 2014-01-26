@@ -61,7 +61,8 @@ namespace preshell
 
     const std::list<std::string>& history() const;
   private:
-    indenter _indenter;
+    indenter _info_indenter;
+    indenter _error_indenter;
     preshell::config _config;
     preshell::result_ptr _context;
     std::string _buffer;

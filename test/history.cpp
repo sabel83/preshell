@@ -71,4 +71,13 @@ BOOST_AUTO_TEST_CASE(test_empty_line_in_history)
   BOOST_CHECK(sh.history().empty());
 }
 
+BOOST_AUTO_TEST_CASE(test_pragma_in_history)
+{
+  test_shell sh(config::empty);
+
+  sh.line_available("#pragma wave preshell_help");
+
+  BOOST_CHECK(sh.history().empty());
+}
+
 

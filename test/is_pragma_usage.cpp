@@ -1,5 +1,5 @@
 // Preshell - Interactive C/C++ preprocessor shell
-// Copyright (C) 2013, Abel Sinkovics (abel@sinkovics.hu)
+// Copyright (C) 2014, Abel Sinkovics (abel@sinkovics.hu)
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,32 +15,31 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <preshell/util.hpp>
-#include <preshell/token.hpp>
 
-#include <boost/wave/cpplexer/cpp_lex_iterator.hpp>
-
-#include <algorithm>
+#include <boost/test/unit_test.hpp>
 
 using namespace preshell;
 
-void preshell::throw_away(std::string)
-{}
-
-bool preshell::is_pragma_usage(const std::string& s_)
+BOOST_AUTO_TEST_CASE(test_no_pragma_usage)
 {
-  using boost::wave::cpplexer::lex_iterator;
-  using boost::wave::language_support;
+  BOOST_CHECK(!is_pragma_usage("hello"));
+}
 
-  const file_position pos("<std::string>");
-  const language_support lng = boost::wave::support_cpp;
-  const lex_iterator<token> e;
-  const std::string s(s_ + "\n");
-  return
-    std::find(
-      lex_iterator<token>(s.begin(), s.end(), pos, lng),
-      e,
-      boost::wave::T_PP_PRAGMA
-    ) != e;
+BOOST_AUTO_TEST_CASE(test_pragma_usage)
+{
+  BOOST_CHECK(is_pragma_usage("#pragma hello"));
+}
+
+BOOST_AUTO_TEST_CASE(test_pragma_with_space)
+{
+  BOOST_CHECK(is_pragma_usage("# pragma hello"));
+  BOOST_CHECK(is_pragma_usage("  #pragma hello"));
+}
+
+BOOST_AUTO_TEST_CASE(test_pragma_in_comment)
+{
+  BOOST_CHECK(!is_pragma_usage("/* #pragma hello */"));
+  BOOST_CHECK(!is_pragma_usage("// #pragma hello"));
 }
 
 

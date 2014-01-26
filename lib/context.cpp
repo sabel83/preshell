@@ -104,14 +104,26 @@ namespace
 context context::initial(
   const config& config_,
   const std::vector<std::string>& macros_,
-  indenter& indenter_
+  indenter& info_indenter_,
+  indenter& error_indenter_,
+  const std::list<std::string>& history_
 )
 {
   std::list<if_state> if_states;
   const bool log_macro_definitions = false;
+  const bool enable_save_history = false;
 
   wave_context_ptr wctx =
-    create_context("", if_states, config_, indenter_, log_macro_definitions);
+    create_context(
+      "",
+      if_states,
+      config_,
+      info_indenter_,
+      error_indenter_,
+      log_macro_definitions,
+      history_,
+      enable_save_history
+    );
   BOOST_FOREACH(const std::string& i, macros_)
   {
     wctx->add_macro_definition(i);

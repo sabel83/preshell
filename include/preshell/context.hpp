@@ -54,7 +54,9 @@ namespace preshell
     static context initial(
       const config& config_,
       const std::vector<std::string>& macros_,
-      indenter& indenter_
+      indenter& info_indenter_,
+      indenter& error_indenter_,
+      const std::list<std::string>& history_
     );
   };
 }

@@ -31,27 +31,30 @@ namespace
 
 BOOST_AUTO_TEST_CASE(test_definition_is_logged)
 {
+  std::list<std::string> history;
   config cfg = config::empty;
   cfg.log_macro_definitions = true;
-  result_ptr r = precompile("#define foo bar", context(), cfg, ind);
+  result_ptr r = precompile("#define foo bar", context(), cfg, ind, history);
   BOOST_CHECK_EQUAL("<stdin>:1:9: #define foo\n", r->info);
 }
 
 BOOST_AUTO_TEST_CASE(test_definition_is_not_logged_when_disabled)
 {
+  std::list<std::string> history;
   config cfg = config::empty;
   cfg.log_macro_definitions = false;
-  result_ptr r = precompile("#define foo bar", context(), cfg, ind);
+  result_ptr r = precompile("#define foo bar", context(), cfg, ind, history);
   BOOST_CHECK_EQUAL("", r->info);
 }
 
 BOOST_AUTO_TEST_CASE(test_undefinition_is_logged)
 {
+  std::list<std::string> history;
   config cfg = config::empty;
   cfg.log_macro_definitions = true;
-  result_ptr r0 = precompile("#define foo bar", context(), cfg, ind);
+  result_ptr r0 = precompile("#define foo bar", context(), cfg, ind, history);
 
-  result_ptr r = precompile("#undef foo", r0->pp_context, cfg, ind);
+  result_ptr r = precompile("#undef foo", r0->pp_context, cfg, ind, history);
   BOOST_CHECK_EQUAL("<stdin>:2:1: #undef foo\n", r->info);
 }
 

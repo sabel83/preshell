@@ -64,12 +64,26 @@ shell::shell(
   const preshell::config& config_,
   const std::vector<std::string>& macros_
 ) :
-  _indenter(
+  _info_indenter(
     boost::bind(&shell::width, static_cast<shell*>(this)),
     boost::bind(&shell::display_info, static_cast<shell*>(this), _1)
   ),
+  _error_indenter(
+    boost::bind(&shell::width, static_cast<shell*>(this)),
+    boost::bind(&shell::display_error, static_cast<shell*>(this), _1)
+  ),
   _config(config_),
-  _context(new result(context::initial(config_, macros_, _indenter))),
+  _context(
+    new result(
+      context::initial(
+        config_,
+        macros_,
+        _info_indenter,
+        _error_indenter,
+        _history
+      )
+    )
+  ),
   _buffer()
 {
   indenter ignore(&always<80>, throw_away);
@@ -79,7 +93,8 @@ shell::shell(
       clang_compatibility_macros,
       _context->pp_context,
       _config,
-      ignore
+      ignore,
+      _history
     );
 
   precompile_input(clang_compatibility_macros);
@@ -91,7 +106,8 @@ shell::shell(
         remove_protected_macro_definitions(_config.builtin_macro_definitions),
         _context->pp_context,
         _config,
-        ignore
+        ignore,
+        _history
       );
   }
 
@@ -192,14 +208,24 @@ void shell::line_available(const std::string& s_)
       add_history(s_);
       _prev_line = s_;
     }
-    _history.push_back(s_);
+    if (!is_pragma_usage(s_))
+    {
+      _history.push_back(s_);
+    }
   }
 
   _buffer += (_buffer == "" ? "" : "\n") + s_;
 
   if (!preshell::continuation_needed(_buffer, _config))
   {
-    _context = precompile(_buffer, _context->pp_context, _config, _indenter);
+    _context =
+      precompile(
+        _buffer,
+        _context->pp_context,
+        _config,
+        _info_indenter,
+        _history
+      );
     _buffer = "";
 
     display_output_if_available();
@@ -218,7 +244,8 @@ std::string shell::prompt() const
 
 void shell::precompile_input(const std::string& s_)
 {
-  _context = precompile(s_, _context->pp_context, _config, _indenter);
+  _context =
+    precompile(s_, _context->pp_context, _config, _info_indenter, _history);
 }
 
 void shell::display_output_if_available() const

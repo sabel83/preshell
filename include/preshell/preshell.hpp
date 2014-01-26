@@ -27,6 +27,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <list>
 
 namespace preshell
 {
@@ -34,7 +35,8 @@ namespace preshell
     const std::string& input_,
     const context& context_,
     const config& config_,
-    indenter& indenter_
+    indenter& indenter_,
+    const std::list<std::string>& history_
   );
   void cancel();
 
