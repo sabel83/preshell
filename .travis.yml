@@ -12,6 +12,6 @@ script:
   - tools/gcc_default_path > lib/default_sysinclude.hpp
   - mkdir bin
   - cd bin
-  - cmake .. -DCMAKE_CXX_FLAGS:STRING="-std=c++0x -Wall -Werror -pedantic"
+  - cmake .. -DCMAKE_CXX_FLAGS:STRING="-Wall -Werror -pedantic"
   - make
   - make test
