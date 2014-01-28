@@ -22,6 +22,7 @@
 
 #include <boost/assign/list_of.hpp>
 #include <boost/bind.hpp>
+#include <boost/foreach.hpp>
 
 #include <boost/preprocessor/stringize.hpp>
 
@@ -84,6 +85,7 @@ shell::shell(
       )
     )
   ),
+  _initial_context(_context->pp_context),
   _buffer()
 {
   indenter ignore(&always<80>, throw_away);
@@ -214,24 +216,7 @@ void shell::line_available(const std::string& s_)
     }
   }
 
-  _buffer += (_buffer == "" ? "" : "\n") + s_;
-
-  if (!preshell::continuation_needed(_buffer, _config))
-  {
-    _context =
-      precompile(
-        _buffer,
-        _context->pp_context,
-        _config,
-        _info_indenter,
-        _history
-      );
-    _buffer = "";
-
-    display_output_if_available();
-    display_info_if_available();
-    display_error_if_available();
-  }
+  process_line<true>(s_);
 }
 
 std::string shell::prompt() const
@@ -282,4 +267,46 @@ const std::list<std::string>& shell::history() const
   return _history;
 }
 
+void shell::replay_history()
+{
+  _context->pp_context = _initial_context;
+  BOOST_FOREACH(const std::string& s, _history)
+  {
+    process_line<false>(s);
+  }
+}
+
+template <bool EnableOutput>
+void shell::process_line(const std::string& s_)
+{
+  _buffer += (_buffer == "" ? "" : "\n") + s_;
+
+  if (!preshell::continuation_needed(_buffer, _config))
+  {
+    assert(!_context->replay_history);
+
+    _context =
+      precompile(
+        _buffer,
+        _context->pp_context,
+        _config,
+        _info_indenter,
+        _history
+      );
+    _buffer = "";
+
+    if (EnableOutput)
+    {
+      display_output_if_available();
+      display_info_if_available();
+      display_error_if_available();
+    }
+
+    if (_context->replay_history)
+    {
+      _context->replay_history = false;
+      replay_history();
+    }
+  }
+}
 

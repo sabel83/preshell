@@ -51,7 +51,8 @@ namespace preshell
       indenter& error_indenter_,
       const bool& log_macro_definitions_,
       const std::list<std::string>& history_,
-      const bool& enable_save_history_
+      const bool& enable_save_history_,
+      bool& replay_history_
     );
 
     template <class Context, class Container>
@@ -113,6 +114,11 @@ namespace preshell
         {
           save_history(token_list_to_string(values_.begin(), values_.end()));
         }
+        return true;
+      }
+      else if (option_.get_value() == "replay_history")
+      {
+        _replay_history = true;
         return true;
       }
 
@@ -218,6 +224,7 @@ namespace preshell
     const bool& _log_macro_definitions;
     const std::list<std::string>& _history;
     const bool& _enable_save_history;
+    bool& _replay_history;
 
     template <class Token>
     void process_token(const Token& token_)

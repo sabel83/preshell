@@ -1,8 +1,8 @@
-#ifndef PRESHELL_RESULT_HPP
-#define PRESHELL_RESULT_HPP
+#ifndef PRESHELL_TEST_TEMP_HEADER_HPP
+#define PRESHELL_TEST_TEMP_HEADER_HPP
 
 // Preshell - Interactive C/C++ preprocessor shell
-// Copyright (C) 2013, Abel Sinkovics (abel@sinkovics.hu)
+// Copyright (C) 2014, Abel Sinkovics (abel@sinkovics.hu)
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,35 +17,27 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <preshell/context.hpp>
+#include <boost/utility.hpp>
 
-#include <boost/shared_ptr.hpp>
+#include <boost/filesystem.hpp>
 
 #include <string>
 
-namespace preshell
+class temp_header : boost::noncopyable
 {
-  struct result
-  {
-    std::string output;
-    std::string error;
-    std::string info;
+public:
+  temp_header();
+  ~temp_header();
 
-    context pp_context;
+  void create(const std::string& content_);
 
-    bool replay_history;
+  std::string include_dir() const;
+  std::string include_command() const;
+private:
+  boost::filesystem::path _path;
 
-    result() : replay_history(false) {}
-    result(const context& ctx_) :
-      output(),
-      error(),
-      pp_context(ctx_),
-      replay_history(false)
-    {}
-  };
-
-  typedef boost::shared_ptr<result> result_ptr;
-}
+  std::string filename() const;
+};
 
 #endif
 

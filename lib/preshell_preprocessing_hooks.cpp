@@ -31,14 +31,16 @@ preshell_preprocessing_hooks::preshell_preprocessing_hooks(
   indenter& error_indenter_,
   const bool& log_macro_definitions_,
   const std::list<std::string>& history_,
-  const bool& enable_save_history_
+  const bool& enable_save_history_,
+  bool& replay_history_
 ) :
   _if_states(if_states_),
   _info_indenter(info_indenter_),
   _error_indenter(error_indenter_),
   _log_macro_definitions(log_macro_definitions_),
   _history(history_),
-  _enable_save_history(enable_save_history_)
+  _enable_save_history(enable_save_history_),
+  _replay_history(replay_history_)
 {}
 
 void preshell_preprocessing_hooks::display_help()

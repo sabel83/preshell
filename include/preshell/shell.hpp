@@ -60,6 +60,8 @@ namespace preshell
     static const std::vector<std::string> directives;
 
     const std::list<std::string>& history() const;
+
+    void replay_history();
   private:
     indenter _info_indenter;
     indenter _error_indenter;
@@ -68,12 +70,16 @@ namespace preshell
     std::string _buffer;
     std::string _prev_line;
     std::list<std::string> _history;
+    preshell::context _initial_context;
 
     void precompile_input(const std::string& s_);
 
     void display_output_if_available() const;
     void display_info_if_available() const;
     void display_error_if_available() const;
+
+    template <bool EnableOutput>
+    void process_line(const std::string& s_);
   };
 }
 

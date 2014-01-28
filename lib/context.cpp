@@ -112,6 +112,7 @@ context context::initial(
   std::list<if_state> if_states;
   const bool log_macro_definitions = false;
   const bool enable_save_history = false;
+  bool replay_history = false;
 
   wave_context_ptr wctx =
     create_context(
@@ -122,7 +123,8 @@ context context::initial(
       error_indenter_,
       log_macro_definitions,
       history_,
-      enable_save_history
+      enable_save_history,
+      replay_history
     );
   BOOST_FOREACH(const std::string& i, macros_)
   {
@@ -138,6 +140,8 @@ context context::initial(
     "\"Getting help: #pragma wave preshell_help\"",
     m
   );
+
+  assert(!replay_history);
 
   return context(m, "<stdin>", 1);
 }

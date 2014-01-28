@@ -184,7 +184,8 @@ result_ptr preshell::precompile(
         error_indenter,
         log_macro_definitions,
         history_,
-        enable_save_history
+        enable_save_history,
+        r->replay_history
       );
     delete_all_macros(*context);
     add_macros(context_.macros.begin(), context_.macros.end(), *context);

@@ -1,8 +1,5 @@
-#ifndef PRESHELL_RESULT_HPP
-#define PRESHELL_RESULT_HPP
-
 // Preshell - Interactive C/C++ preprocessor shell
-// Copyright (C) 2013, Abel Sinkovics (abel@sinkovics.hu)
+// Copyright (C) 2014, Abel Sinkovics (abel@sinkovics.hu)
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,35 +14,39 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <preshell/context.hpp>
+#include "temp_header.hpp"
 
-#include <boost/shared_ptr.hpp>
+#include <iostream>
+#include <fstream>
 
-#include <string>
+temp_header::temp_header() :
+  _path(absolute(boost::filesystem::unique_path()))
+{}
 
-namespace preshell
+temp_header::~temp_header()
 {
-  struct result
-  {
-    std::string output;
-    std::string error;
-    std::string info;
-
-    context pp_context;
-
-    bool replay_history;
-
-    result() : replay_history(false) {}
-    result(const context& ctx_) :
-      output(),
-      error(),
-      pp_context(ctx_),
-      replay_history(false)
-    {}
-  };
-
-  typedef boost::shared_ptr<result> result_ptr;
+  remove(_path);
 }
 
-#endif
+void temp_header::create(const std::string& content_)
+{
+  std::ofstream f(filename().c_str());
+  f << content_ << std::endl;
+}
+
+std::string temp_header::include_dir() const
+{
+  return _path.parent_path().native();
+}
+
+std::string temp_header::filename() const
+{
+  return _path.filename().native();
+}
+
+std::string temp_header::include_command() const
+{
+  return "#include <" + filename() + ">\n";
+}
+
 
