@@ -85,8 +85,7 @@ shell::shell(
       )
     )
   ),
-  _initial_context(_context->pp_context),
-  _buffer()
+  _initial_context(_context->pp_context)
 {
   indenter ignore(&always<80>, throw_away);
 
