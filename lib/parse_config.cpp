@@ -154,6 +154,7 @@ parse_config_result preshell::parse_config(
       {
         *out_ << desc << std::endl;
       }
+      return exit_without_error;
     }
     else
     {
