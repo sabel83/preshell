@@ -18,7 +18,7 @@
 #include <preshell/util.hpp>
 #include "test_util.hpp"
 
-#include <boost/test/unit_test.hpp>
+#include <just/test.hpp>
 
 #include <string>
 
@@ -29,25 +29,25 @@ namespace
   indenter ind(always<80>, should_not_be_called);
 }
 
-BOOST_AUTO_TEST_CASE(test_definition_is_logged)
+JUST_TEST_CASE(test_definition_is_logged)
 {
   std::list<std::string> history;
   config cfg = config::empty;
   cfg.log_macro_definitions = true;
   result_ptr r = precompile("#define foo bar", context(), cfg, ind, history);
-  BOOST_CHECK_EQUAL("<stdin>:1:9: #define foo\n", r->info);
+  JUST_ASSERT_EQUAL("<stdin>:1:9: #define foo\n", r->info);
 }
 
-BOOST_AUTO_TEST_CASE(test_definition_is_not_logged_when_disabled)
+JUST_TEST_CASE(test_definition_is_not_logged_when_disabled)
 {
   std::list<std::string> history;
   config cfg = config::empty;
   cfg.log_macro_definitions = false;
   result_ptr r = precompile("#define foo bar", context(), cfg, ind, history);
-  BOOST_CHECK_EQUAL("", r->info);
+  JUST_ASSERT_EQUAL("", r->info);
 }
 
-BOOST_AUTO_TEST_CASE(test_undefinition_is_logged)
+JUST_TEST_CASE(test_undefinition_is_logged)
 {
   std::list<std::string> history;
   config cfg = config::empty;
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(test_undefinition_is_logged)
   result_ptr r0 = precompile("#define foo bar", context(), cfg, ind, history);
 
   result_ptr r = precompile("#undef foo", r0->pp_context, cfg, ind, history);
-  BOOST_CHECK_EQUAL("<stdin>:2:1: #undef foo\n", r->info);
+  JUST_ASSERT_EQUAL("<stdin>:2:1: #undef foo\n", r->info);
 }
 
 

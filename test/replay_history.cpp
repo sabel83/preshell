@@ -17,7 +17,7 @@
 #include "test_shell.hpp"
 #include "temp_header.hpp"
 
-#include <boost/test/unit_test.hpp>
+#include <just/test.hpp>
 
 #include <boost/filesystem.hpp>
 
@@ -43,12 +43,12 @@ namespace
     replay_history_(sh);
     sh.line_available("FOO");
 
-    BOOST_CHECK_EQUAL("foo", sh.normal());
-    BOOST_CHECK_EQUAL("", sh.error());
+    JUST_ASSERT_EQUAL("foo", sh.normal());
+    JUST_ASSERT_EQUAL("", sh.error());
   }
 }
 
-BOOST_AUTO_TEST_CASE(test_replay_no_include)
+JUST_TEST_CASE(test_replay_no_include)
 {
   test_shell sh(config::empty);
 
@@ -56,10 +56,10 @@ BOOST_AUTO_TEST_CASE(test_replay_no_include)
   sh.replay_history();
   sh.line_available("FOO");
 
-  BOOST_CHECK_EQUAL("bar", sh.normal());
+  JUST_ASSERT_EQUAL("bar", sh.normal());
 }
 
-BOOST_AUTO_TEST_CASE(test_temp_header)
+JUST_TEST_CASE(test_temp_header)
 {
   temp_header header;
 
@@ -72,27 +72,27 @@ BOOST_AUTO_TEST_CASE(test_temp_header)
   sh.line_available(header.include_command());
   sh.line_available("FOO");
 
-  BOOST_CHECK_EQUAL("bar", sh.normal());
+  JUST_ASSERT_EQUAL("bar", sh.normal());
 }
 
-BOOST_AUTO_TEST_CASE(test_changing_header_between_replay)
+JUST_TEST_CASE(test_changing_header_between_replay)
 {
   test_changing_header_between_replay_impl(
     boost::bind(&test_shell::replay_history, _1)
   );
 }
 
-BOOST_AUTO_TEST_CASE(test_no_output_during_replay_history)
+JUST_TEST_CASE(test_no_output_during_replay_history)
 {
   test_shell sh(config::empty);
 
   sh.line_available("foo bar");
   sh.replay_history();
 
-  BOOST_CHECK_EQUAL("foo bar", sh.normal());
+  JUST_ASSERT_EQUAL("foo bar", sh.normal());
 }
 
-BOOST_AUTO_TEST_CASE(test_pragma_for_replay_history)
+JUST_TEST_CASE(test_pragma_for_replay_history)
 {
   test_changing_header_between_replay_impl(
     boost::bind(&test_shell::line_available, _1, "#pragma wave replay_history")

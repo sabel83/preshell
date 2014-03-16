@@ -16,71 +16,71 @@
 
 #include "test_shell.hpp"
 
-#include <boost/test/unit_test.hpp>
+#include <just/test.hpp>
 
 using namespace preshell;
 
-BOOST_AUTO_TEST_CASE(test_has_builtin)
+JUST_TEST_CASE(test_has_builtin)
 {
   test_shell sh(config::default_config);
 
   sh.line_available("#if __has_builtin(__builtin_trap)");
 
-  BOOST_CHECK_EQUAL("", sh.error());
+  JUST_ASSERT_EQUAL("", sh.error());
 }
 
-BOOST_AUTO_TEST_CASE(test_has_feature)
+JUST_TEST_CASE(test_has_feature)
 {
   test_shell sh(config::default_config);
 
   sh.line_available("#if __has_feature(cxx_rvalue_references)");
 
-  BOOST_CHECK_EQUAL("", sh.error());
+  JUST_ASSERT_EQUAL("", sh.error());
 }
 
-BOOST_AUTO_TEST_CASE(test_has_extension)
+JUST_TEST_CASE(test_has_extension)
 {
   test_shell sh(config::default_config);
 
   sh.line_available("#if __has_extension(cxx_rvalue_references)");
 
-  BOOST_CHECK_EQUAL("", sh.error());
+  JUST_ASSERT_EQUAL("", sh.error());
 }
 
-BOOST_AUTO_TEST_CASE(test_has_attribute)
+JUST_TEST_CASE(test_has_attribute)
 {
   test_shell sh(config::default_config);
 
   sh.line_available("#if __has_attribute(always_inline)");
 
-  BOOST_CHECK_EQUAL("", sh.error());
+  JUST_ASSERT_EQUAL("", sh.error());
 }
 
-BOOST_AUTO_TEST_CASE(test_has_include)
+JUST_TEST_CASE(test_has_include)
 {
   test_shell sh(config::default_config);
 
   sh.line_available("#if __has_include(\"myinclude.h\")");
 
-  BOOST_CHECK_EQUAL("", sh.error());
+  JUST_ASSERT_EQUAL("", sh.error());
 }
 
-BOOST_AUTO_TEST_CASE(test_has_include_next)
+JUST_TEST_CASE(test_has_include_next)
 {
   test_shell sh(config::default_config);
 
   sh.line_available("#if __has_include_next(\"myinclude.h\")");
 
-  BOOST_CHECK_EQUAL("", sh.error());
+  JUST_ASSERT_EQUAL("", sh.error());
 }
 
-BOOST_AUTO_TEST_CASE(test_has_warning)
+JUST_TEST_CASE(test_has_warning)
 {
   test_shell sh(config::default_config);
 
   sh.line_available("#if __has_warning(-Wformat)");
 
-  BOOST_CHECK_EQUAL("", sh.error());
+  JUST_ASSERT_EQUAL("", sh.error());
 }
 
 

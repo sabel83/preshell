@@ -19,7 +19,7 @@
 
 #include <boost/wave/cpplexer/cpp_lex_iterator.hpp>
 
-#include <boost/test/unit_test.hpp>
+#include <just/test.hpp>
 
 #include <string>
 #include <vector>
@@ -39,24 +39,24 @@ namespace
   }
 }
 
-BOOST_AUTO_TEST_CASE(test_join_suppressing_empty_line)
+JUST_TEST_CASE(test_join_suppressing_empty_line)
 {
-  BOOST_REQUIRE_EQUAL("", parse_and_output("\n"));
+  JUST_ASSERT_EQUAL("", parse_and_output("\n"));
 }
 
-BOOST_AUTO_TEST_CASE(test_join_not_suppressing_nonempty_line)
+JUST_TEST_CASE(test_join_not_suppressing_nonempty_line)
 {
-  BOOST_REQUIRE_EQUAL("a\n", parse_and_output("a\n"));
+  JUST_ASSERT_EQUAL("a\n", parse_and_output("a\n"));
 }
 
-BOOST_AUTO_TEST_CASE(test_suppressing_with_cpp_comment)
+JUST_TEST_CASE(test_suppressing_with_cpp_comment)
 {
-  BOOST_REQUIRE_EQUAL("// comment \nx", parse_and_output("// comment \n\nx"));
+  JUST_ASSERT_EQUAL("// comment \nx", parse_and_output("// comment \n\nx"));
 }
 
-BOOST_AUTO_TEST_CASE(test_suppressing_with_c_comment)
+JUST_TEST_CASE(test_suppressing_with_c_comment)
 {
-  BOOST_REQUIRE_EQUAL("// comment \nx", parse_and_output("// comment \n\nx"));
+  JUST_ASSERT_EQUAL("// comment \nx", parse_and_output("// comment \n\nx"));
 }
 
 

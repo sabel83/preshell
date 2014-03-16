@@ -16,7 +16,7 @@
 
 #include <preshell/parse_config.hpp>
 
-#include <boost/test/unit_test.hpp>
+#include <just/test.hpp>
 
 namespace
 {
@@ -31,26 +31,26 @@ namespace
   }
 }
 
-BOOST_AUTO_TEST_CASE(test_save_history_is_disabled_by_default)
+JUST_TEST_CASE(test_save_history_is_disabled_by_default)
 {
   const char* args[] = {"preshell"};
 
   preshell::config cfg = preshell::config::empty;
   parse_config(cfg, args);
 
-  BOOST_CHECK(!preshell::config::empty.enable_save_history);
-  BOOST_CHECK(!preshell::config::default_config.enable_save_history);
-  BOOST_CHECK(!cfg.enable_save_history);
+  JUST_ASSERT(!preshell::config::empty.enable_save_history);
+  JUST_ASSERT(!preshell::config::default_config.enable_save_history);
+  JUST_ASSERT(!cfg.enable_save_history);
 }
 
-BOOST_AUTO_TEST_CASE(test_enable_save_history)
+JUST_TEST_CASE(test_enable_save_history)
 {
   const char* args[] = {"preshell", "-H"};
 
   preshell::config cfg = preshell::config::empty;
   parse_config(cfg, args);
 
-  BOOST_CHECK(cfg.enable_save_history);
+  JUST_ASSERT(cfg.enable_save_history);
 }
 
 

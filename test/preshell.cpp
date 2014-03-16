@@ -14,13 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#define BOOST_TEST_MODULE preshell
-
 #include <preshell/preshell.hpp>
 #include <preshell/util.hpp>
 #include "test_util.hpp"
 
-#include <boost/test/unit_test.hpp>
+#include <just/test.hpp>
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
@@ -47,21 +45,21 @@ namespace
   indenter ind(always<80>, should_not_be_called);
 }
 
-BOOST_AUTO_TEST_CASE(test_empty_input)
+JUST_TEST_CASE(test_empty_input)
 {
   std::list<std::string> history;
   result_ptr r = precompile("", context(), config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r->output);
+  JUST_ASSERT_EQUAL("", r->output);
 }
 
-BOOST_AUTO_TEST_CASE(test_one_character_input)
+JUST_TEST_CASE(test_one_character_input)
 {
   std::list<std::string> history;
   result_ptr r = precompile("a", context(), config::empty, ind, history);
-  BOOST_CHECK_EQUAL("a", r->output);
+  JUST_ASSERT_EQUAL("a", r->output);
 }
 
-BOOST_AUTO_TEST_CASE(test_macro_call)
+JUST_TEST_CASE(test_macro_call)
 {
   std::list<std::string> history;
   const file_position position("<stdin>", 1, 1);
@@ -71,10 +69,10 @@ BOOST_AUTO_TEST_CASE(test_macro_call)
   context ctx;
   ctx.macros["M"] = macro_definition(position, def);
   result_ptr r = precompile("M", ctx, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("foo", r->output);
+  JUST_ASSERT_EQUAL("foo", r->output);
 }
 
-BOOST_AUTO_TEST_CASE(test_macro_definition)
+JUST_TEST_CASE(test_macro_definition)
 {
   std::list<std::string> history;
   const file_position position("<stdin>", 1, 9);
@@ -86,11 +84,11 @@ BOOST_AUTO_TEST_CASE(test_macro_definition)
 
   result_ptr r =
     precompile("#define M foo", context(), config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r->output);
-  BOOST_CHECK_EQUAL(m["M"], r->pp_context.macros["M"]);
+  JUST_ASSERT_EQUAL("", r->output);
+  JUST_ASSERT_EQUAL(m["M"], r->pp_context.macros["M"]);
 }
 
-BOOST_AUTO_TEST_CASE(test_macro_deletion)
+JUST_TEST_CASE(test_macro_deletion)
 {
   std::list<std::string> history;
   const file_position position("<stdin>", 1, 9);
@@ -101,11 +99,11 @@ BOOST_AUTO_TEST_CASE(test_macro_deletion)
   ctx.macros["M"] = macro_definition(position, def);
 
   result_ptr r = precompile("#undef M", ctx, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r->output);
-  BOOST_CHECK(r->pp_context.macros.find("M") == r->pp_context.macros.end());
+  JUST_ASSERT_EQUAL("", r->output);
+  JUST_ASSERT(r->pp_context.macros.find("M") == r->pp_context.macros.end());
 }
 
-BOOST_AUTO_TEST_CASE(test_overriding_predefined_macro)
+JUST_TEST_CASE(test_overriding_predefined_macro)
 {
   std::list<std::string> history;
   const file_position position("<stdin>", 1, 1);
@@ -115,10 +113,10 @@ BOOST_AUTO_TEST_CASE(test_overriding_predefined_macro)
   context ctx;
   ctx.macros["__DATE__"] = macro_definition(position, def);
   result_ptr r = precompile("hello", ctx, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("hello", r->output);
+  JUST_ASSERT_EQUAL("hello", r->output);
 }
 
-BOOST_AUTO_TEST_CASE(test_missing_endif)
+JUST_TEST_CASE(test_missing_endif)
 {
   std::list<std::string> history;
   const file_position position("<stdin>", 2, 9);
@@ -130,183 +128,183 @@ BOOST_AUTO_TEST_CASE(test_missing_endif)
 
   result_ptr r =
     precompile("#if 1\n#define M foo", context(), config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r->output);
-  BOOST_CHECK_EQUAL(m["M"], r->pp_context.macros["M"]);
+  JUST_ASSERT_EQUAL("", r->output);
+  JUST_ASSERT_EQUAL(m["M"], r->pp_context.macros["M"]);
 }
 
-BOOST_AUTO_TEST_CASE(test_in_if_0)
+JUST_TEST_CASE(test_in_if_0)
 {
   std::list<std::string> history;
   result_ptr r1 = precompile("#if 0", context(), config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r1->output);
+  JUST_ASSERT_EQUAL("", r1->output);
   result_ptr r2 =
     precompile("hello", r1->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r2->output);
+  JUST_ASSERT_EQUAL("", r2->output);
   result_ptr r3 =
     precompile("#else", r2->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r3->output);
+  JUST_ASSERT_EQUAL("", r3->output);
   result_ptr r4 =
     precompile("foo", r3->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("foo", r4->output);
+  JUST_ASSERT_EQUAL("foo", r4->output);
   result_ptr r5 =
     precompile("#endif", r4->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r5->output);
+  JUST_ASSERT_EQUAL("", r5->output);
   result_ptr r6 =
     precompile("world", r5->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("world", r6->output);
+  JUST_ASSERT_EQUAL("world", r6->output);
 }
 
-BOOST_AUTO_TEST_CASE(test_in_if_1)
+JUST_TEST_CASE(test_in_if_1)
 {
   std::list<std::string> history;
   result_ptr r1 = precompile("#if 1", context(), config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r1->output);
+  JUST_ASSERT_EQUAL("", r1->output);
   result_ptr r2 =
     precompile("hello", r1->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("hello", r2->output);
+  JUST_ASSERT_EQUAL("hello", r2->output);
   result_ptr r3 =
     precompile("#else", r2->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r3->output);
+  JUST_ASSERT_EQUAL("", r3->output);
   result_ptr r4 =
     precompile("foo", r3->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r4->output);
+  JUST_ASSERT_EQUAL("", r4->output);
   result_ptr r5 =
     precompile("#endif", r4->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r5->output);
+  JUST_ASSERT_EQUAL("", r5->output);
   result_ptr r6 =
     precompile("world", r5->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("world", r6->output);
+  JUST_ASSERT_EQUAL("world", r6->output);
 }
 
-BOOST_AUTO_TEST_CASE(test_if1_elif1)
+JUST_TEST_CASE(test_if1_elif1)
 {
   std::list<std::string> history;
   result_ptr r1 = precompile("#if 1", context(), config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r1->output);
+  JUST_ASSERT_EQUAL("", r1->output);
   result_ptr r2 =
    precompile("hello", r1->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("hello", r2->output);
+  JUST_ASSERT_EQUAL("hello", r2->output);
   result_ptr r3 =
     precompile("#elif 1", r2->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r3->output);
+  JUST_ASSERT_EQUAL("", r3->output);
   result_ptr r4 =
     precompile("foo", r3->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r4->output);
+  JUST_ASSERT_EQUAL("", r4->output);
   result_ptr r5 =
     precompile("#endif", r4->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r5->output);
+  JUST_ASSERT_EQUAL("", r5->output);
 }
 
-BOOST_AUTO_TEST_CASE(test_if1_elif0)
+JUST_TEST_CASE(test_if1_elif0)
 {
   std::list<std::string> history;
   result_ptr r1 = precompile("#if 1", context(), config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r1->output);
+  JUST_ASSERT_EQUAL("", r1->output);
   result_ptr r2 =
     precompile("hello", r1->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("hello", r2->output);
+  JUST_ASSERT_EQUAL("hello", r2->output);
   result_ptr r3 =
     precompile("#elif 0", r2->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r3->output);
+  JUST_ASSERT_EQUAL("", r3->output);
   result_ptr r4 =
     precompile("foo", r3->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r4->output);
+  JUST_ASSERT_EQUAL("", r4->output);
   result_ptr r5 =
     precompile("#endif", r4->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r5->output);
+  JUST_ASSERT_EQUAL("", r5->output);
 }
 
-BOOST_AUTO_TEST_CASE(test_if0_elif1)
+JUST_TEST_CASE(test_if0_elif1)
 {
   std::list<std::string> history;
   result_ptr r1 = precompile("#if 0", context(), config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r1->output);
+  JUST_ASSERT_EQUAL("", r1->output);
   result_ptr r2 =
     precompile("hello", r1->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r2->output);
+  JUST_ASSERT_EQUAL("", r2->output);
   result_ptr r3 =
     precompile("#elif 1", r2->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r3->output);
+  JUST_ASSERT_EQUAL("", r3->output);
   result_ptr r4 =
     precompile("foo", r3->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("foo", r4->output);
+  JUST_ASSERT_EQUAL("foo", r4->output);
   result_ptr r5 =
     precompile("#endif", r4->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r5->output);
+  JUST_ASSERT_EQUAL("", r5->output);
 }
 
-BOOST_AUTO_TEST_CASE(test_if0_elif0)
+JUST_TEST_CASE(test_if0_elif0)
 {
   std::list<std::string> history;
   result_ptr r1 = precompile("#if 0", context(), config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r1->output);
+  JUST_ASSERT_EQUAL("", r1->output);
   result_ptr r2 =
     precompile("hello", r1->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r2->output);
+  JUST_ASSERT_EQUAL("", r2->output);
   result_ptr r3 =
     precompile("#elif 0", r2->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r3->output);
+  JUST_ASSERT_EQUAL("", r3->output);
   result_ptr r4 =
     precompile("foo", r3->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r4->output);
+  JUST_ASSERT_EQUAL("", r4->output);
   result_ptr r5 =
     precompile("#endif", r4->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r5->output);
+  JUST_ASSERT_EQUAL("", r5->output);
 }
 
-BOOST_AUTO_TEST_CASE(test_if0_elif0_else)
+JUST_TEST_CASE(test_if0_elif0_else)
 {
   std::list<std::string> history;
   result_ptr r1 = precompile("#if 0", context(), config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r1->output);
+  JUST_ASSERT_EQUAL("", r1->output);
   result_ptr r2 =
     precompile("hello", r1->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r2->output);
+  JUST_ASSERT_EQUAL("", r2->output);
   result_ptr r3 =
     precompile("#elif 0", r2->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r3->output);
+  JUST_ASSERT_EQUAL("", r3->output);
   result_ptr r4 =
     precompile("foo", r3->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r4->output);
+  JUST_ASSERT_EQUAL("", r4->output);
   result_ptr r5 =
     precompile("#else", r4->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r5->output);
+  JUST_ASSERT_EQUAL("", r5->output);
   result_ptr r6 =
     precompile("bar", r5->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("bar", r6->output);
+  JUST_ASSERT_EQUAL("bar", r6->output);
   result_ptr r7 =
     precompile("#endif", r6->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r7->output);
+  JUST_ASSERT_EQUAL("", r7->output);
 }
 
-BOOST_AUTO_TEST_CASE(test_error)
+JUST_TEST_CASE(test_error)
 {
   std::list<std::string> history;
   result_ptr r =
    precompile("#error foo", context(), config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r->output);
-  BOOST_CHECK("" != r->error);
+  JUST_ASSERT_EQUAL("", r->output);
+  JUST_ASSERT("" != r->error);
 }
 
-BOOST_AUTO_TEST_CASE(test_line)
+JUST_TEST_CASE(test_line)
 {
   std::list<std::string> history;
   result_ptr r1 =
     precompile("__LINE__", context(), config::empty, ind, history);
-  BOOST_CHECK_EQUAL("1", r1->output);
-  BOOST_CHECK_EQUAL(2, r1->pp_context.line);
-  BOOST_REQUIRE_EQUAL(1, r1->pp_context.macros["__LINE__"].definition().size());
-  BOOST_CHECK_EQUAL(
+  JUST_ASSERT_EQUAL("1", r1->output);
+  JUST_ASSERT_EQUAL(2, r1->pp_context.line);
+  JUST_ASSERT_EQUAL(1, r1->pp_context.macros["__LINE__"].definition().size());
+  JUST_ASSERT_EQUAL(
     "2",
     r1->pp_context.macros["__LINE__"].definition().front().get_value()
   );
 
   result_ptr r2 =
     precompile("__LINE__", r1->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("2", r2->output);
-  BOOST_CHECK_EQUAL(3, r2->pp_context.line);
-  BOOST_REQUIRE_EQUAL(1, r2->pp_context.macros["__LINE__"].definition().size());
-  BOOST_CHECK_EQUAL(
+  JUST_ASSERT_EQUAL("2", r2->output);
+  JUST_ASSERT_EQUAL(3, r2->pp_context.line);
+  JUST_ASSERT_EQUAL(1, r2->pp_context.macros["__LINE__"].definition().size());
+  JUST_ASSERT_EQUAL(
     "3",
     r2->pp_context.macros["__LINE__"].definition().front().get_value()
   );
@@ -319,7 +317,7 @@ BOOST_AUTO_TEST_CASE(test_line)
       ind,
       history
     );
-  BOOST_CHECK(contains("__LINE__", split(r3->info)));
+  JUST_ASSERT(contains("__LINE__", split(r3->info)));
 
   result_ptr r4 =
     precompile(
@@ -329,28 +327,28 @@ BOOST_AUTO_TEST_CASE(test_line)
       ind,
       history
     );
-  BOOST_CHECK(contains("__LINE__ 4", split(r4->info)));
+  JUST_ASSERT(contains("__LINE__ 4", split(r4->info)));
 }
 
-BOOST_AUTO_TEST_CASE(test_file)
+JUST_TEST_CASE(test_file)
 {
   std::list<std::string> history;
   result_ptr r1 =
     precompile("__FILE__", context(), config::empty, ind, history);
-  BOOST_CHECK_EQUAL("\"<stdin>\"", r1->output);
-  BOOST_CHECK_EQUAL("<stdin>", r1->pp_context.filename);
-  BOOST_REQUIRE_EQUAL(1, r1->pp_context.macros["__FILE__"].definition().size());
-  BOOST_CHECK_EQUAL(
+  JUST_ASSERT_EQUAL("\"<stdin>\"", r1->output);
+  JUST_ASSERT_EQUAL("<stdin>", r1->pp_context.filename);
+  JUST_ASSERT_EQUAL(1, r1->pp_context.macros["__FILE__"].definition().size());
+  JUST_ASSERT_EQUAL(
     "\"<stdin>\"",
     r1->pp_context.macros["__FILE__"].definition().front().get_value()
   );
 
   result_ptr r2 =
     precompile("__FILE__", r1->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("\"<stdin>\"", r2->output);
-  BOOST_CHECK_EQUAL("<stdin>", r2->pp_context.filename);
-  BOOST_REQUIRE_EQUAL(1, r2->pp_context.macros["__FILE__"].definition().size());
-  BOOST_CHECK_EQUAL(
+  JUST_ASSERT_EQUAL("\"<stdin>\"", r2->output);
+  JUST_ASSERT_EQUAL("<stdin>", r2->pp_context.filename);
+  JUST_ASSERT_EQUAL(1, r2->pp_context.macros["__FILE__"].definition().size());
+  JUST_ASSERT_EQUAL(
     "\"<stdin>\"",
     r2->pp_context.macros["__FILE__"].definition().front().get_value()
   );
@@ -363,7 +361,7 @@ BOOST_AUTO_TEST_CASE(test_file)
       ind,
       history
     );
-  BOOST_CHECK(contains("__FILE__", split(r3->info)));
+  JUST_ASSERT(contains("__FILE__", split(r3->info)));
 
   result_ptr r4 =
     precompile(
@@ -373,47 +371,47 @@ BOOST_AUTO_TEST_CASE(test_file)
       ind,
       history
     );
-  BOOST_CHECK(contains("__FILE__ \"<stdin>\"", split(r4->info)));
+  JUST_ASSERT(contains("__FILE__ \"<stdin>\"", split(r4->info)));
 }
 
-BOOST_AUTO_TEST_CASE(test_line_override)
+JUST_TEST_CASE(test_line_override)
 {
   std::list<std::string> history;
   result_ptr r1 =
     precompile("#line 13 \"foo.cpp\"", context(), config::empty, ind, history);
-  BOOST_CHECK_EQUAL("", r1->output);
-  BOOST_CHECK_EQUAL(13, r1->pp_context.line);
-  BOOST_REQUIRE_EQUAL(1, r1->pp_context.macros["__LINE__"].definition().size());
-  BOOST_CHECK_EQUAL(
+  JUST_ASSERT_EQUAL("", r1->output);
+  JUST_ASSERT_EQUAL(13, r1->pp_context.line);
+  JUST_ASSERT_EQUAL(1, r1->pp_context.macros["__LINE__"].definition().size());
+  JUST_ASSERT_EQUAL(
     "13",
     r1->pp_context.macros["__LINE__"].definition().front().get_value()
   );
-  BOOST_CHECK_EQUAL("foo.cpp", r1->pp_context.filename);
-  BOOST_REQUIRE_EQUAL(1, r1->pp_context.macros["__FILE__"].definition().size());
-  BOOST_CHECK_EQUAL(
+  JUST_ASSERT_EQUAL("foo.cpp", r1->pp_context.filename);
+  JUST_ASSERT_EQUAL(1, r1->pp_context.macros["__FILE__"].definition().size());
+  JUST_ASSERT_EQUAL(
     "\"foo.cpp\"",
     r1->pp_context.macros["__FILE__"].definition().front().get_value()
   );
 
   result_ptr r2 =
     precompile("__LINE__", r1->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("13", r2->output);
-  BOOST_CHECK_EQUAL(14, r2->pp_context.line);
-  BOOST_REQUIRE_EQUAL(1, r2->pp_context.macros["__LINE__"].definition().size());
-  BOOST_CHECK_EQUAL(
+  JUST_ASSERT_EQUAL("13", r2->output);
+  JUST_ASSERT_EQUAL(14, r2->pp_context.line);
+  JUST_ASSERT_EQUAL(1, r2->pp_context.macros["__LINE__"].definition().size());
+  JUST_ASSERT_EQUAL(
     "14",
     r2->pp_context.macros["__LINE__"].definition().front().get_value()
   );
-  BOOST_CHECK_EQUAL("foo.cpp", r2->pp_context.filename);
-  BOOST_REQUIRE_EQUAL(1, r2->pp_context.macros["__FILE__"].definition().size());
-  BOOST_CHECK_EQUAL(
+  JUST_ASSERT_EQUAL("foo.cpp", r2->pp_context.filename);
+  JUST_ASSERT_EQUAL(1, r2->pp_context.macros["__FILE__"].definition().size());
+  JUST_ASSERT_EQUAL(
     "\"foo.cpp\"",
     r2->pp_context.macros["__FILE__"].definition().front().get_value()
   );
 
   result_ptr r3 =
     precompile("__FILE__", r2->pp_context, config::empty, ind, history);
-  BOOST_CHECK_EQUAL("\"foo.cpp\"", r3->output);
+  JUST_ASSERT_EQUAL("\"foo.cpp\"", r3->output);
 
   result_ptr r4 =
     precompile(
@@ -423,8 +421,8 @@ BOOST_AUTO_TEST_CASE(test_line_override)
       ind,
       history
     );
-  BOOST_CHECK(contains("__FILE__", split(r4->info)));
-  BOOST_CHECK(contains("__LINE__", split(r4->info)));
+  JUST_ASSERT(contains("__FILE__", split(r4->info)));
+  JUST_ASSERT(contains("__LINE__", split(r4->info)));
 
   result_ptr r5 =
     precompile(
@@ -434,11 +432,11 @@ BOOST_AUTO_TEST_CASE(test_line_override)
       ind,
       history
     );
-  BOOST_CHECK(contains("__FILE__ \"foo.cpp\"", split(r5->info)));
-  BOOST_CHECK(contains("__LINE__ 16", split(r5->info)));
+  JUST_ASSERT(contains("__FILE__ \"foo.cpp\"", split(r5->info)));
+  JUST_ASSERT(contains("__LINE__ 16", split(r5->info)));
 }
 
-BOOST_AUTO_TEST_CASE(test_input_processed_after_warning)
+JUST_TEST_CASE(test_input_processed_after_warning)
 {
   std::list<std::string> history;
   const config cfg = config::empty;
@@ -456,10 +454,10 @@ BOOST_AUTO_TEST_CASE(test_input_processed_after_warning)
 
   result_ptr r2 = precompile("b", r1->pp_context, cfg, ind, history);
 
-  BOOST_CHECK_EQUAL("3", r2->output);
+  JUST_ASSERT_EQUAL("3", r2->output);
 }
 
-BOOST_AUTO_TEST_CASE(test_disable_warnings)
+JUST_TEST_CASE(test_disable_warnings)
 {
   std::list<std::string> history;
   config cfg = config::empty;
@@ -475,6 +473,6 @@ BOOST_AUTO_TEST_CASE(test_disable_warnings)
       history
     );
 
-  BOOST_CHECK_EQUAL("", r->error);
+  JUST_ASSERT_EQUAL("", r->error);
 }
 

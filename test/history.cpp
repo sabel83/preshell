@@ -16,40 +16,40 @@
 
 #include "test_shell.hpp"
 
-#include <boost/test/unit_test.hpp>
+#include <just/test.hpp>
 
 using namespace preshell;
 
-BOOST_AUTO_TEST_CASE(test_empty_history)
+JUST_TEST_CASE(test_empty_history)
 {
   test_shell sh(config::empty);
 
-  BOOST_CHECK(sh.history().empty());
+  JUST_ASSERT(sh.history().empty());
 }
 
-BOOST_AUTO_TEST_CASE(test_one_element_history)
+JUST_TEST_CASE(test_one_element_history)
 {
   test_shell sh(config::empty);
 
   sh.line_available("foo");
 
-  BOOST_CHECK_EQUAL(1, sh.history().size());
-  BOOST_CHECK_EQUAL("foo", sh.history().front());
+  JUST_ASSERT_EQUAL(1, sh.history().size());
+  JUST_ASSERT_EQUAL("foo", sh.history().front());
 }
 
-BOOST_AUTO_TEST_CASE(test_two_element_history)
+JUST_TEST_CASE(test_two_element_history)
 {
   test_shell sh(config::empty);
 
   sh.line_available("foo");
   sh.line_available("bar");
 
-  BOOST_CHECK_EQUAL(2, sh.history().size());
-  BOOST_CHECK_EQUAL("foo", sh.history().front());
-  BOOST_CHECK_EQUAL("bar", sh.history().back());
+  JUST_ASSERT_EQUAL(2, sh.history().size());
+  JUST_ASSERT_EQUAL("foo", sh.history().front());
+  JUST_ASSERT_EQUAL("bar", sh.history().back());
 }
 
-BOOST_AUTO_TEST_CASE(test_repetition_in_history)
+JUST_TEST_CASE(test_repetition_in_history)
 {
   std::vector<std::string> add_history_callback_log;
 
@@ -58,26 +58,26 @@ BOOST_AUTO_TEST_CASE(test_repetition_in_history)
   sh.line_available("foo");
   sh.line_available("foo");
 
-  BOOST_CHECK_EQUAL(2, sh.history().size());
-  BOOST_CHECK_EQUAL(1, add_history_callback_log.size());
+  JUST_ASSERT_EQUAL(2, sh.history().size());
+  JUST_ASSERT_EQUAL(1, add_history_callback_log.size());
 }
 
-BOOST_AUTO_TEST_CASE(test_empty_line_in_history)
+JUST_TEST_CASE(test_empty_line_in_history)
 {
   test_shell sh(config::empty);
 
   sh.line_available("");
 
-  BOOST_CHECK(sh.history().empty());
+  JUST_ASSERT(sh.history().empty());
 }
 
-BOOST_AUTO_TEST_CASE(test_pragma_in_history)
+JUST_TEST_CASE(test_pragma_in_history)
 {
   test_shell sh(config::empty);
 
   sh.line_available("#pragma wave preshell_help");
 
-  BOOST_CHECK(sh.history().empty());
+  JUST_ASSERT(sh.history().empty());
 }
 
 
