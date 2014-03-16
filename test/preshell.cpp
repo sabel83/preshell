@@ -293,7 +293,7 @@ JUST_TEST_CASE(test_line)
     precompile("__LINE__", context(), config::empty, ind, history);
   JUST_ASSERT_EQUAL("1", r1->output);
   JUST_ASSERT_EQUAL(2, r1->pp_context.line);
-  JUST_ASSERT_EQUAL(1, r1->pp_context.macros["__LINE__"].definition().size());
+  JUST_ASSERT_EQUAL(1u, r1->pp_context.macros["__LINE__"].definition().size());
   JUST_ASSERT_EQUAL(
     "2",
     r1->pp_context.macros["__LINE__"].definition().front().get_value()
@@ -303,7 +303,7 @@ JUST_TEST_CASE(test_line)
     precompile("__LINE__", r1->pp_context, config::empty, ind, history);
   JUST_ASSERT_EQUAL("2", r2->output);
   JUST_ASSERT_EQUAL(3, r2->pp_context.line);
-  JUST_ASSERT_EQUAL(1, r2->pp_context.macros["__LINE__"].definition().size());
+  JUST_ASSERT_EQUAL(1u, r2->pp_context.macros["__LINE__"].definition().size());
   JUST_ASSERT_EQUAL(
     "3",
     r2->pp_context.macros["__LINE__"].definition().front().get_value()
@@ -337,7 +337,7 @@ JUST_TEST_CASE(test_file)
     precompile("__FILE__", context(), config::empty, ind, history);
   JUST_ASSERT_EQUAL("\"<stdin>\"", r1->output);
   JUST_ASSERT_EQUAL("<stdin>", r1->pp_context.filename);
-  JUST_ASSERT_EQUAL(1, r1->pp_context.macros["__FILE__"].definition().size());
+  JUST_ASSERT_EQUAL(1u, r1->pp_context.macros["__FILE__"].definition().size());
   JUST_ASSERT_EQUAL(
     "\"<stdin>\"",
     r1->pp_context.macros["__FILE__"].definition().front().get_value()
@@ -347,7 +347,7 @@ JUST_TEST_CASE(test_file)
     precompile("__FILE__", r1->pp_context, config::empty, ind, history);
   JUST_ASSERT_EQUAL("\"<stdin>\"", r2->output);
   JUST_ASSERT_EQUAL("<stdin>", r2->pp_context.filename);
-  JUST_ASSERT_EQUAL(1, r2->pp_context.macros["__FILE__"].definition().size());
+  JUST_ASSERT_EQUAL(1u, r2->pp_context.macros["__FILE__"].definition().size());
   JUST_ASSERT_EQUAL(
     "\"<stdin>\"",
     r2->pp_context.macros["__FILE__"].definition().front().get_value()
@@ -381,13 +381,13 @@ JUST_TEST_CASE(test_line_override)
     precompile("#line 13 \"foo.cpp\"", context(), config::empty, ind, history);
   JUST_ASSERT_EQUAL("", r1->output);
   JUST_ASSERT_EQUAL(13, r1->pp_context.line);
-  JUST_ASSERT_EQUAL(1, r1->pp_context.macros["__LINE__"].definition().size());
+  JUST_ASSERT_EQUAL(1u, r1->pp_context.macros["__LINE__"].definition().size());
   JUST_ASSERT_EQUAL(
     "13",
     r1->pp_context.macros["__LINE__"].definition().front().get_value()
   );
   JUST_ASSERT_EQUAL("foo.cpp", r1->pp_context.filename);
-  JUST_ASSERT_EQUAL(1, r1->pp_context.macros["__FILE__"].definition().size());
+  JUST_ASSERT_EQUAL(1u, r1->pp_context.macros["__FILE__"].definition().size());
   JUST_ASSERT_EQUAL(
     "\"foo.cpp\"",
     r1->pp_context.macros["__FILE__"].definition().front().get_value()
@@ -397,13 +397,13 @@ JUST_TEST_CASE(test_line_override)
     precompile("__LINE__", r1->pp_context, config::empty, ind, history);
   JUST_ASSERT_EQUAL("13", r2->output);
   JUST_ASSERT_EQUAL(14, r2->pp_context.line);
-  JUST_ASSERT_EQUAL(1, r2->pp_context.macros["__LINE__"].definition().size());
+  JUST_ASSERT_EQUAL(1u, r2->pp_context.macros["__LINE__"].definition().size());
   JUST_ASSERT_EQUAL(
     "14",
     r2->pp_context.macros["__LINE__"].definition().front().get_value()
   );
   JUST_ASSERT_EQUAL("foo.cpp", r2->pp_context.filename);
-  JUST_ASSERT_EQUAL(1, r2->pp_context.macros["__FILE__"].definition().size());
+  JUST_ASSERT_EQUAL(1u, r2->pp_context.macros["__FILE__"].definition().size());
   JUST_ASSERT_EQUAL(
     "\"foo.cpp\"",
     r2->pp_context.macros["__FILE__"].definition().front().get_value()

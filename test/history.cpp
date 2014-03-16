@@ -33,7 +33,7 @@ JUST_TEST_CASE(test_one_element_history)
 
   sh.line_available("foo");
 
-  JUST_ASSERT_EQUAL(1, sh.history().size());
+  JUST_ASSERT_EQUAL(1u, sh.history().size());
   JUST_ASSERT_EQUAL("foo", sh.history().front());
 }
 
@@ -44,7 +44,7 @@ JUST_TEST_CASE(test_two_element_history)
   sh.line_available("foo");
   sh.line_available("bar");
 
-  JUST_ASSERT_EQUAL(2, sh.history().size());
+  JUST_ASSERT_EQUAL(2u, sh.history().size());
   JUST_ASSERT_EQUAL("foo", sh.history().front());
   JUST_ASSERT_EQUAL("bar", sh.history().back());
 }
@@ -58,8 +58,8 @@ JUST_TEST_CASE(test_repetition_in_history)
   sh.line_available("foo");
   sh.line_available("foo");
 
-  JUST_ASSERT_EQUAL(2, sh.history().size());
-  JUST_ASSERT_EQUAL(1, add_history_callback_log.size());
+  JUST_ASSERT_EQUAL(2u, sh.history().size());
+  JUST_ASSERT_EQUAL(1u, add_history_callback_log.size());
 }
 
 JUST_TEST_CASE(test_empty_line_in_history)

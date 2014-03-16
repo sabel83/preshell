@@ -95,7 +95,7 @@ JUST_TEST_CASE(test_history_is_stored)
 
   sh.line_available("int");
 
-  JUST_ASSERT_EQUAL(1, history.size());
+  JUST_ASSERT_EQUAL(1u, history.size());
   JUST_ASSERT_EQUAL("int", history.front());
 }
 
@@ -106,7 +106,7 @@ JUST_TEST_CASE(test_empty_line_is_not_stored_in_history)
 
   sh.line_available("");
 
-  JUST_ASSERT_EQUAL(0, history.size());
+  JUST_ASSERT_EQUAL(0u, history.size());
 }
 
 JUST_TEST_CASE(
@@ -119,7 +119,7 @@ JUST_TEST_CASE(
   sh.line_available("int");
   sh.line_available("int");
 
-  JUST_ASSERT_EQUAL(1, history.size());
+  JUST_ASSERT_EQUAL(1u, history.size());
   JUST_ASSERT_EQUAL("int", history.front());
 }
 
