@@ -27,7 +27,7 @@
 
 #include <boost/assign/list_of.hpp>
 
-#include <process/process.hpp>
+#include <just/process.hpp>
 
 #include <boost/foreach.hpp>
 
@@ -47,7 +47,7 @@ namespace
   {
     const std::vector<std::string> cmd = boost::assign::list_of<std::string>
       ("/bin/sh")("-c")(cmd_);
-    const process::output o = process::run(cmd, "");
+    const just::process::output o = just::process::run(cmd, "");
     return o.standard_output() + o.standard_error();
   }
 
