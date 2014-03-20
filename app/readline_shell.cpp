@@ -17,7 +17,8 @@
 #include "readline_shell.hpp"
 #include "interrupt_handler_override.hpp"
 #include "override_guard.hpp"
-#include "console.hpp"
+
+#include <just/console.hpp>
 
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -55,14 +56,13 @@ namespace
     }
   }
 
-  template <console::color Color>
-  void display(const std::string& s_)
+  void display(just::console::color c_, const std::string& s_)
   {
     if (s_ != "")
     {
-      console::text_color(Color);
+      just::console::text_color(c_);
       std::cout << s_;
-      console::reset();
+      just::console::reset();
       std::cout << std::endl;
     }
   }
@@ -182,12 +182,12 @@ void readline_shell::display_normal(const std::string& s_) const
 
 void readline_shell::display_info(const std::string& s_) const
 {
-  display<console::bright_cyan>(s_);
+  display(just::console::color::bright_cyan, s_);
 }
 
 void readline_shell::display_error(const std::string& s_) const
 {
-  display<console::bright_red>(s_);
+  display(just::console::color::bright_red, s_);
 }
 
 unsigned int readline_shell::width() const
