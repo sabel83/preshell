@@ -22,7 +22,7 @@ include_directories(${READLINE_INCLUDE_DIR})
 target_link_libraries(preshell ${READLINE_LIBRARY})
 
 # Preshell
-target_link_libraries(preshell preshell_lib)
+target_link_libraries(preshell preshell_core_lib)
 
 # Wave
 target_link_libraries(preshell

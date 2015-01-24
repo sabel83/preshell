@@ -25,8 +25,8 @@ else
   PACKAGE_FORMAT=DEB
 fi
 
-tools/gcc_default_path > lib/default_sysinclude.hpp \
-  && tools/gcc_builtin_macros > lib/default_defines.hpp \
+tools/gcc_default_path > lib/core/default_sysinclude.hpp \
+  && tools/gcc_builtin_macros > lib/core/default_defines.hpp \
   \
   && mkdir -p bin \
   && cd bin \

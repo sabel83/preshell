@@ -8,8 +8,8 @@ script:
   # Test that the TOC of the description is up to date
   - tools/gen_toc -i README.md -o - -t github | diff README.md -
   # Test the code
-  - tools/gcc_builtin_macros > lib/default_defines.hpp
-  - tools/gcc_default_path > lib/default_sysinclude.hpp
+  - tools/gcc_builtin_macros > lib/core/default_defines.hpp
+  - tools/gcc_default_path > lib/core/default_sysinclude.hpp
   - mkdir bin
   - cd bin
   - cmake .. -DCMAKE_CXX_FLAGS:STRING="-Wall -Werror -pedantic"

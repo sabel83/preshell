@@ -15,19 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 aux_source_directory(. SOURCES)
-add_executable(preshell_test ${SOURCES})
+add_library(preshell_core_lib STATIC ${SOURCES})
 
-target_link_libraries(preshell_test
-  preshell_core_lib
-  ${Boost_SYSTEM_LIBRARY}
-  ${Boost_THREAD_LIBRARY}
-  ${Boost_FILESYSTEM_LIBRARY}
-  ${Boost_WAVE_LIBRARY}
-  ${CMAKE_THREAD_LIBS_INIT}
-)
-
-# Program_options
-target_link_libraries(preshell_test ${Boost_PROGRAM_OPTIONS_LIBRARIES})
-
-add_test(preshell_unit_tests preshell_test)
+# Readline
+include_directories(${READLINE_INCLUDE_DIR})
 
